@@ -8,7 +8,7 @@ Spec y tareas: proyecto **PoM** en Linear.
 - **Next.js 16** (App Router, TypeScript, Tailwind).
 - **Cloudflare Workers**: hosting. La app de Next se adapta con [OpenNext](https://opennext.js.org/cloudflare).
 - **Cloudflare D1**: base de datos (SQLite administrado por Cloudflare).
-- **Cloudflare Access**: protege la URL sin login propio (hito 6).
+- **Cloudflare Access**: protege la URL sin login propio (solo miembros de la cuenta de Cloudflare).
 - PWA instalable (hito 6).
 
 ¿Primera vez con Cloudflare? Leé [docs/cloudflare.md](docs/cloudflare.md).

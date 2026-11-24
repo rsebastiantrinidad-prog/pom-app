@@ -8,6 +8,10 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-20",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Sin URLs de vista previa por versión: así la única puerta de entrada es la
+  // URL principal, que protege Cloudflare Access (PER-113).
+  "workers_dev": true,
+  "preview_urls": false,
   // Archivos estáticos (JS, CSS, íconos) servidos directo por Cloudflare
   "assets": {
     "directory": ".open-next/assets",

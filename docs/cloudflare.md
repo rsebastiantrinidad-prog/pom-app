@@ -9,7 +9,7 @@ Celular / navegador
       │  https://pom-app.<tu-subdominio>.workers.dev
       ▼
 ┌──────────────────────────── Cloudflare ────────────────────────────┐
-│  Access (hito 6)  →  pide tu email antes de dejarte pasar           │
+│  Access           →  pide tu login antes de dejarte pasar           │
 │        │                                                            │
 │        ▼                                                            │
 │  Worker "pom-app"  →  tu app de Next.js corriendo en Cloudflare     │
@@ -46,8 +46,12 @@ la base, se aplican migraciones, se consulta y se publica. Su configuración es 
 **Migración.** Un archivo SQL numerado en `migrations/` que cambia el esquema de la base.
 Wrangler recuerda cuáles ya aplicó y solo aplica las nuevas.
 
-**Access (Zero Trust).** Una puerta delante de la app: antes de entrar pide tu email y te manda un
-código. Solo pasan los emails que vos autorices. Gratis hasta 50 usuarios. Lo configuramos en el hito 6.
+**Access (Zero Trust).** Una puerta delante de la app: antes de entrar te pide identificarte.
+Gratis hasta 50 usuarios. En PoM está configurado así (Workers → pom-app → **Access**):
+- Scope **All traffic** (URL principal y vistas previas).
+- Política **Cloudflare account**: solo entran los miembros de la cuenta de Cloudflare.
+  No usar "Email domain": con Gmail dejaría entrar a cualquier cuenta de Gmail.
+- Duración de sesión recomendada: 1 mes (para la PWA). Organización Zero Trust: `hidden-glitter-4888` (plan Free).
 
 ## Puesta en marcha (una sola vez)
 
@@ -89,10 +93,10 @@ código. Solo pasan los emails que vos autorices. Gratis hasta 50 usuarios. Lo c
 
 - **Compute → Workers & Pages → pom-app**: versiones, logs, métricas y dominio.
 - **Storage & databases → D1 → pom-db**: ver tablas, correr SQL desde el navegador y ver *Time Travel*.
-- **Zero Trust → Access → Applications**: dónde se protege la URL (hito 6).
+- **Workers & Pages → pom-app → Access**: quién puede entrar y cuánto dura la sesión.
 
 ## Límites a tener en cuenta
 
 - **Cache Components** de Next.js está desactivado porque no funciona bien en Workers.
 - Las pantallas leen la base en cada pedido, sin caché: es lo correcto para datos personales que cambian todo el tiempo.
-- Sin Access, cualquiera que tenga la URL puede leer y escribir. No compartirla hasta el hito 6.
+- Todo lo que entra a la app pasa por Access. Si agregás a alguien a la cuenta de Cloudflare (Invite), también puede entrar a PoM.
