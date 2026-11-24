@@ -1,0 +1,30 @@
+// Configuración de Cloudflare Workers (la "ficha" del despliegue).
+// Docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Nombre del Worker: define la URL pom-app.<tu-subdominio>.workers.dev
+  "name": "pom-app",
+  // Punto de entrada que genera OpenNext al compilar la app de Next.js
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-20",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Archivos estáticos (JS, CSS, íconos) servidos directo por Cloudflare
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // Base de datos D1 (SQLite). En el código se accede como env.DB
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pom-db",
+      // Se completa después de `npx wrangler d1 create pom-db`
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // Logs visibles en el dashboard (Workers → pom-app → Logs)
+  "observability": {
+    "enabled": true
+  }
+}
