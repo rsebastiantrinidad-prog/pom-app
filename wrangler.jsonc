@@ -18,8 +18,8 @@
     {
       "binding": "DB",
       "database_name": "pom-db",
-      // Se completa después de `npx wrangler d1 create pom-db`
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // ID de la base creada con `npx wrangler d1 create pom-db` (no es secreto)
+      "database_id": "d68802c0-3df5-439a-89de-14a6ae0c9e29",
       "migrations_dir": "migrations"
     }
   ],
