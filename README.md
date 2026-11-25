@@ -22,6 +22,7 @@ src/lib/pom/       Lógica de negocio de PoM, sin UI ni base de datos
 src/lib/db/        Acceso a D1. Solo del lado del servidor.
 src/app/           Interfaz (Next.js App Router).
 migrations/        Migraciones SQL de D1, numeradas y versionadas.
+public/brand/      Logos de Driven By People en SVG, extraídos en vector del Manual de identidad.
 wrangler.jsonc     Configuración de Cloudflare (Worker, D1).
 open-next.config.ts  Configuración del adaptador OpenNext.
 ```
@@ -61,3 +62,13 @@ Consultar la base desde la terminal:
 npx wrangler d1 execute pom-db --local  --command "SELECT * FROM pom_sessions"
 npx wrangler d1 execute pom-db --remote --command "SELECT * FROM pom_sessions"
 ```
+
+## Identidad visual
+
+La app sigue el Manual de identidad de Driven By People:
+
+- **Colores**: turquesa `#18A7A0` y violeta `#661EDA`, con su paleta. Están como tokens en `src/app/globals.css`; los componentes usan nombres semánticos (`bg-primary`, `text-muted`…), así el modo oscuro se resuelve en un solo lugar.
+- **Tipografías**: Smooch Sans (títulos y números) y Quicksand (textos), servidas desde la app con `@fontsource`.
+- **Forma de hoja**: utilidades `leaf` y `leaf-sm` (esquinas redondeadas en diagonal).
+- **Logos**: `public/brand/` (color y blanco). No se recolorean ni deforman; en modo oscuro se usa la versión blanca.
+- **Movimiento**: animaciones suaves y flotantes; se desactivan solas si el sistema pide "reducir movimiento".

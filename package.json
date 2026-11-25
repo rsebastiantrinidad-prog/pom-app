@@ -16,7 +16,10 @@
     "db:migrate:remote": "wrangler d1 migrations apply pom-db --remote"
   },
   "dependencies": {
+    "@fontsource-variable/quicksand": "^5.3.0",
+    "@fontsource-variable/smooch-sans": "^5.3.0",
     "@opennextjs/cloudflare": "^1.20.18",
+    "lucide-react": "^1.79.0",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",

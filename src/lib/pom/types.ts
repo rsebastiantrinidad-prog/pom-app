@@ -61,4 +61,6 @@ export interface AppSettings {
   rest_minutes: number;
   schedule: ScheduleSlot[];
   phone_apps: string[];
+  /** Mostrar la pista de foco por bloque (PER-93). */
+  show_focus_hints: boolean;
 }

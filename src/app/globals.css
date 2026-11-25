@@ -1,24 +1,176 @@
 @import "tailwindcss";
 
+/*
+ * Identidad visual de Driven By People (Manual de identidad).
+ * Colores de marca: turquesa #18A7A0 y violeta #661EDA, con su paleta.
+ * Tipografías: Smooch Sans (principal, títulos y números) y Quicksand (anexo, textos).
+ * Las fuentes se sirven desde la propia app (@fontsource), sin pedir nada a Google.
+ *
+ * Los componentes usan tokens semánticos (bg-surface, text-muted, bg-primary…),
+ * así el modo oscuro y cualquier ajuste de marca se cambian solo acá.
+ */
+
 :root {
+  /* Paleta del manual */
+  --dbp-teal-50: #d7fffb;
+  --dbp-teal-200: #80ddd6;
+  --dbp-teal: #18a7a0;
+  --dbp-teal-900: #26514f;
+  --dbp-violet-300: #9163ea;
+  --dbp-indigo: #6363eb;
+  --dbp-violet: #661eda;
+  --dbp-violet-900: #320f6a;
+  --dbp-lavender: #e1e6ff;
+  --dbp-gray: #666666;
+  --dbp-gray-dark: #4d4d4d;
+
+  /* Tokens semánticos: modo claro */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
+  --muted: var(--dbp-gray);
+  --line: var(--dbp-lavender);
+  --tint: #f3f5ff;
+  --primary: var(--dbp-violet);
+  --primary-fg: #ffffff;
+  --accent: var(--dbp-teal);
+  --accent-strong: #11817b; /* turquesa más oscuro para texto chico sobre blanco */
+  --accent-soft: var(--dbp-teal-50);
+  --accent-line: var(--dbp-teal-200);
+  --warn-soft: var(--dbp-lavender);
+  --warn-line: var(--dbp-violet-300);
+  --star: var(--dbp-violet);
+  --star-off: var(--dbp-lavender);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #000000;
+    --foreground: #ffffff;
+    --muted: #a6a6a6;
+    --line: var(--dbp-violet-900);
+    --tint: #140628;
+    --primary: var(--dbp-violet-300);
+    --primary-fg: #ffffff;
+    --accent: var(--dbp-teal-200);
+    --accent-strong: var(--dbp-teal-200);
+    --accent-soft: #0f2a29;
+    --accent-line: var(--dbp-teal-900);
+    --warn-soft: #1d0b3d;
+    --warn-line: var(--dbp-violet-900);
+    --star: var(--dbp-violet-300);
+    --star-off: #3a3a3a;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-tint: var(--tint);
+  --color-primary: var(--primary);
+  --color-primary-fg: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-line: var(--accent-line);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-line: var(--warn-line);
+  --color-star: var(--star);
+  --color-star-off: var(--star-off);
+
+  /* Colores por sector, tomados de la paleta (para listas y gráficos) */
+  --color-sector-estudio: var(--dbp-indigo);
+  --color-sector-personal: var(--dbp-teal);
+  --color-sector-dbp: var(--dbp-violet);
+
+  --font-sans: "Quicksand Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Smooch Sans Variable", "Quicksand Variable", system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Forma de "hoja" del manual: esquinas redondeadas en diagonal. */
+@utility leaf {
+  border-radius: 0.375rem 1.5rem 0.375rem 1.5rem;
+}
+@utility leaf-sm {
+  border-radius: 0.25rem 0.875rem 0.25rem 0.875rem;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
+  font-weight: 500;
+}
+
+/* ---------------------------------------------------------------------------
+ * Movimiento: suave, etéreo y flotante. Todo se apaga con "reducir movimiento".
+ * ------------------------------------------------------------------------- */
+@theme {
+  --ease-float: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-up: fade-up 0.6s var(--ease-float) both;
+  --animate-fade-in: fade-in 0.8s var(--ease-float) both;
+  --animate-pop: pop 0.45s var(--ease-float) both;
+  --animate-sheet: sheet-up 0.45s var(--ease-float) both;
+  --animate-breathe: breathe 6s ease-in-out infinite;
+  --animate-drift-a: drift-a 22s ease-in-out infinite;
+  --animate-drift-b: drift-b 28s ease-in-out infinite;
+  --animate-drift-c: drift-c 34s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); filter: blur(4px); }
+    to { opacity: 1; transform: none; filter: none; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pop {
+    0% { opacity: 0; transform: scale(0.92); }
+    60% { opacity: 1; transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+  @keyframes sheet-up {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.025); opacity: 1; }
+  }
+  @keyframes drift-a {
+    0%, 100% { transform: translate(-10%, -6%) scale(1); }
+    50% { transform: translate(12%, 10%) scale(1.15); }
+  }
+  @keyframes drift-b {
+    0%, 100% { transform: translate(8%, 6%) scale(1.1); }
+    50% { transform: translate(-12%, -8%) scale(0.95); }
+  }
+  @keyframes drift-c {
+    0%, 100% { transform: translate(0, 10%) scale(0.9); }
+    50% { transform: translate(6%, -12%) scale(1.1); }
+  }
+}
+
+/* Escalonar entradas: style={{ "--i": n }} */
+.stagger {
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* Respuesta táctil al tocar botones */
+.press {
+  transition: transform 0.2s var(--ease-float), opacity 0.2s, background-color 0.3s, box-shadow 0.3s;
+}
+.press:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

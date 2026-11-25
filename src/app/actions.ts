@@ -1,12 +1,12 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { getSettings } from "@/lib/db";
+import { getSettings, saveSchedule } from "@/lib/db";
 import { discardPom, interruptPom, ratePom, startPom } from "@/lib/db/poms";
-import { getSlotAt, SECTORS, type Sector } from "@/lib/pom";
+import { getSlotAt, SECTORS, validateSchedule, type Sector } from "@/lib/pom";
 
-// Sin login: hasta configurar Cloudflare Access (PER-113), cualquiera con la URL
-// puede llamar a estas acciones. Por eso validan todo lo que reciben.
+// Cloudflare Access (PER-113) filtra quién llega hasta acá, pero estas acciones
+// igual validan todo lo que reciben: son endpoints POST como cualquier otro.
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -74,6 +74,18 @@ export async function ratePomAction(id: string, rating: number, note: string): P
     if (!(await ratePom(id, rating, text, new Date()))) return { ok: false, error: "Ese PoM todavía no terminó." };
   } catch (e) {
     return fail(e, "Este PoM no se puede valorar.");
+  }
+  refresh();
+  return { ok: true };
+}
+
+export async function saveScheduleAction(schedule: unknown, showFocusHints: boolean): Promise<ActionResult> {
+  const res = validateSchedule(schedule);
+  if (!res.ok) return res;
+  try {
+    await saveSchedule(res.schedule, showFocusHints === true);
+  } catch (e) {
+    return fail(e, "No se pudo guardar la configuración.");
   }
   refresh();
   return { ok: true };

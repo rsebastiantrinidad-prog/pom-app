@@ -2,30 +2,71 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { PauseCircle, X } from "lucide-react";
 import { discardPomAction, interruptPomAction } from "@/app/actions";
-import { canDiscard, formatCountdown, getRemainingMs, SECTOR_LABELS, type PomSession } from "@/lib/pom";
+import { canDiscard, formatCountdown, getRemainingMs, type PomSession } from "@/lib/pom";
 import { playAlarm, unlockAudio } from "./alarm";
+import { Ambient } from "./ambient";
+import { SectorTag } from "./sector-tag";
+
+const R = 46; // radio del anillo en un viewBox de 100
+const C = 2 * Math.PI * R;
+
+/** Mantiene la pantalla encendida mientras dura el bloque (donde el navegador lo permite). */
+function useWakeLock() {
+  useEffect(() => {
+    let lock: WakeLockSentinel | null = null;
+    const request = async () => {
+      try {
+        if ("wakeLock" in navigator && document.visibilityState === "visible") {
+          lock = await navigator.wakeLock.request("screen");
+        }
+      } catch {
+        // Sin permiso o sin soporte: el reloj igual funciona.
+      }
+    };
+    void request();
+    document.addEventListener("visibilitychange", request);
+    return () => {
+      document.removeEventListener("visibilitychange", request);
+      void lock?.release().catch(() => {});
+    };
+  }, []);
+}
 
 /**
- * Bloque en curso. La cuenta regresiva se recalcula siempre como `ends_at - ahora`
- * (PER-84), así es exacta aunque el celular haya bloqueado la pantalla.
+ * Modo foco a pantalla completa. La cuenta regresiva se recalcula siempre como
+ * `ends_at - ahora` (PER-84), así es exacta aunque el celular bloquee la pantalla.
  */
-export function PomTimer({ pom, serverNow }: { pom: PomSession; serverNow: number }) {
+export function PomTimer({
+  pom,
+  serverNow,
+  hint,
+  blockLabel,
+}: {
+  pom: PomSession;
+  serverNow: number;
+  hint?: string | null;
+  blockLabel?: string | null;
+}) {
   const router = useRouter();
   const [now, setNow] = useState(serverNow);
-  const [interrupting, setInterrupting] = useState(false);
+  const [sheet, setSheet] = useState<null | "interrupt" | "discard">(null);
   const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const rang = useRef(false);
+  useWakeLock();
 
   const at = new Date(now);
   const remaining = getRemainingMs(pom, at);
   const discardable = canDiscard(pom, at);
+  const total = new Date(pom.ends_at).getTime() - new Date(pom.started_at).getTime();
+  const progress = total > 0 ? Math.min(1, 1 - remaining / total) : 1;
 
   useEffect(() => {
     const tick = () => setNow(Date.now());
-    const id = setInterval(tick, 500);
+    const id = setInterval(tick, 250);
     const onVisible = () => document.visibilityState === "visible" && tick();
     document.addEventListener("visibilitychange", onVisible);
     // Si la página se recargó a mitad del bloque, el primer toque habilita el sonido.
@@ -54,78 +95,151 @@ export function PomTimer({ pom, serverNow }: { pom: PomSession; serverNow: numbe
   };
 
   return (
-    <section className="flex flex-col gap-4 rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
-      <div className="flex flex-col gap-1">
-        <p className="text-sm text-zinc-500">{SECTOR_LABELS[pom.sector]}</p>
-        <p className="text-lg font-medium">{pom.objective}</p>
+    <section
+      aria-label="Bloque en curso"
+      className="fixed inset-0 isolate z-40 flex animate-fade-in flex-col overflow-hidden bg-background"
+    >
+      <Ambient intensity="focus" />
+
+      {/* Encabezado */}
+      <div className="flex animate-fade-up flex-col items-center gap-1 px-6 pt-[max(2rem,env(safe-area-inset-top))] text-center">
+        <SectorTag sector={pom.sector} className="text-sm font-bold text-muted" />
+        {blockLabel && <p className="font-display text-xl font-bold leading-none text-primary">{blockLabel}</p>}
       </div>
 
-      <p className="text-center font-mono text-7xl font-semibold tabular-nums" aria-live="off">
-        {formatCountdown(remaining)}
-      </p>
-
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
-      {interrupting ? (
-        <form
-          className="flex flex-col gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (note.trim()) run(() => interruptPomAction(pom.id, note));
-          }}
-        >
-          <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium">¿Qué pasó? (obligatorio)</span>
-            <textarea
-              autoFocus
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              rows={2}
-              maxLength={1000}
-              className="resize-none rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-base dark:border-zinc-700"
+      {/* Reloj */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6">
+        <div className="relative aspect-square w-[min(84vw,58vh)] animate-breathe">
+          <svg viewBox="0 0 100 100" className="size-full -rotate-90" aria-hidden>
+            <defs>
+              <linearGradient id="pom-ring" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="var(--dbp-teal)" />
+                <stop offset="100%" stopColor="var(--dbp-violet)" />
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r={R} fill="none" stroke="var(--line)" strokeWidth="2.2" />
+            <circle
+              cx="50"
+              cy="50"
+              r={R}
+              fill="none"
+              stroke="url(#pom-ring)"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+              strokeDasharray={C}
+              strokeDashoffset={C * (1 - progress)}
+              className="transition-[stroke-dashoffset] duration-700 ease-linear"
             />
-          </label>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setInterrupting(false)}
-              className="flex-1 rounded-xl border border-zinc-300 py-2 dark:border-zinc-700"
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <p
+              className="font-display text-[min(28vw,19vh)] font-bold leading-none tabular-nums tracking-tight"
+              aria-live="off"
             >
-              Seguir con el bloque
-            </button>
-            <button
-              type="submit"
-              disabled={!note.trim() || pending}
-              className="flex-1 rounded-xl bg-amber-600 py-2 font-semibold text-white disabled:opacity-40"
-            >
-              Interrumpir
-            </button>
+              {formatCountdown(remaining)}
+            </p>
+            <p className="mt-1 text-sm font-semibold text-muted">
+              {remaining > 0 ? "restantes" : "¡listo!"}
+            </p>
           </div>
-        </form>
-      ) : (
-        <div className="flex gap-2">
-          {discardable && (
-            <button
-              type="button"
-              disabled={pending}
-              onClick={() => {
-                if (confirm("¿Descartar este bloque? No va a contar en ningún total.")) {
-                  run(() => discardPomAction(pom.id));
-                }
-              }}
-              className="rounded-xl px-3 py-2 text-sm text-zinc-500 underline"
-            >
-              Descartar
-            </button>
-          )}
+        </div>
+
+        <div className="flex max-w-sm animate-fade-up flex-col items-center gap-1 text-center [animation-delay:150ms]">
+          <p className="text-xl font-bold leading-snug">{pom.objective}</p>
+          {hint && <p className="text-sm font-semibold text-accent-strong">Foco sugerido · {hint}</p>}
+        </div>
+      </div>
+
+      {/* Acciones */}
+      <div className="flex animate-fade-up items-center justify-center gap-3 px-6 pb-[max(2rem,env(safe-area-inset-bottom))] [animation-delay:250ms]">
+        {discardable && (
           <button
             type="button"
-            disabled={pending || remaining === 0}
-            onClick={() => setInterrupting(true)}
-            className="ml-auto rounded-xl border border-amber-600 px-4 py-2 text-amber-700 dark:text-amber-500"
+            onClick={() => setSheet("discard")}
+            className="press rounded-full px-4 py-3 text-sm font-semibold text-muted"
           >
-            Interrumpir
+            Descartar
           </button>
+        )}
+        <button
+          type="button"
+          disabled={remaining === 0}
+          onClick={() => setSheet("interrupt")}
+          className="press flex items-center gap-2 rounded-full border border-line bg-background/60 px-6 py-3 font-bold backdrop-blur-md hover:border-primary"
+        >
+          <PauseCircle className="size-5 text-primary" />
+          Interrumpir
+        </button>
+      </div>
+
+      {/* Hoja inferior: interrumpir o descartar */}
+      {sheet && (
+        <div className="absolute inset-0 z-10 flex animate-fade-in items-end bg-black/30 backdrop-blur-sm" onClick={() => setSheet(null)}>
+          <div
+            role="dialog"
+            aria-modal="true"
+            onClick={(e) => e.stopPropagation()}
+            className="leaf mx-auto mb-[max(1rem,env(safe-area-inset-bottom))] flex w-[min(100%-2rem,28rem)] animate-sheet flex-col gap-4 border border-line bg-background p-5 shadow-2xl shadow-black/20"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <h2 className="font-display text-3xl font-bold leading-none">
+                {sheet === "interrupt" ? "¿Qué pasó?" : "¿Descartar el bloque?"}
+              </h2>
+              <button type="button" onClick={() => setSheet(null)} className="press -m-1 p-1 text-muted" aria-label="Cerrar">
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {sheet === "interrupt" ? (
+              <form
+                className="flex flex-col gap-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (note.trim()) run(() => interruptPomAction(pom.id, note));
+                }}
+              >
+                <p className="text-sm text-muted">
+                  El bloque queda guardado como interrumpido, con los minutos trabajados. No cuenta como PoM completado.
+                </p>
+                <textarea
+                  autoFocus
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  rows={3}
+                  maxLength={1000}
+                  placeholder="Ej.: me llamaron por una urgencia"
+                  className="leaf-sm resize-none border border-line bg-tint px-3 py-2 text-base placeholder:text-muted focus:border-primary focus:outline-none"
+                />
+                {error && <p className="text-sm text-red-600">{error}</p>}
+                <button
+                  type="submit"
+                  disabled={!note.trim() || pending}
+                  className="press leaf bg-primary py-3 font-display text-2xl font-bold text-primary-fg disabled:opacity-35"
+                >
+                  {pending ? "Guardando…" : "Interrumpir bloque"}
+                </button>
+              </form>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <p className="text-sm text-muted">
+                  Es solo para inicios por error: no va a contar en ningún total. Después de los 2 primeros minutos solo
+                  se puede interrumpir.
+                </p>
+                {error && <p className="text-sm text-red-600">{error}</p>}
+                <button
+                  type="button"
+                  disabled={pending || !discardable}
+                  onClick={() => run(() => discardPomAction(pom.id))}
+                  className="press leaf bg-foreground py-3 font-display text-2xl font-bold text-background disabled:opacity-35"
+                >
+                  {pending ? "Descartando…" : "Sí, descartar"}
+                </button>
+                <button type="button" onClick={() => setSheet(null)} className="press py-2 font-semibold text-muted">
+                  Seguir con el bloque
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </section>

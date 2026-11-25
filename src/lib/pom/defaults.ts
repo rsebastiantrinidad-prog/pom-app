@@ -30,4 +30,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
     { start: "22:00", end: "24:00", label: "Libre", sector: null, pom_count: null },
   ],
   phone_apps: ["TikTok", "X", "Chrome", "Instagram"],
+  show_focus_hints: true,
 };
