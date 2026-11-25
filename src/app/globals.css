@@ -188,18 +188,18 @@ body {
  * ------------------------------------------------------------------------- */
 @theme {
   --ease-float: cubic-bezier(0.22, 1, 0.36, 1);
-  --animate-fade-up: fade-up 0.6s var(--ease-float) both;
-  --animate-fade-in: fade-in 0.8s var(--ease-float) both;
-  --animate-pop: pop 0.45s var(--ease-float) both;
-  --animate-sheet: sheet-up 0.45s var(--ease-float) both;
+  --animate-fade-up: fade-up 0.32s var(--ease-float) both;
+  --animate-fade-in: fade-in 0.25s var(--ease-float) both;
+  --animate-pop: pop 0.35s var(--ease-float) both;
+  --animate-sheet: sheet-up 0.32s var(--ease-float) both;
   --animate-breathe: breathe 6s ease-in-out infinite;
   --animate-drift-a: drift-a 22s ease-in-out infinite;
   --animate-drift-b: drift-b 28s ease-in-out infinite;
   --animate-drift-c: drift-c 34s ease-in-out infinite;
 
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(14px); filter: blur(4px); }
-    to { opacity: 1; transform: none; filter: none; }
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
   }
   @keyframes fade-in {
     from { opacity: 0; }
@@ -234,7 +234,7 @@ body {
 
 /* Escalonar entradas: style={{ "--i": n }} */
 .stagger {
-  animation-delay: calc(var(--i, 0) * 60ms);
+  animation-delay: calc(var(--i, 0) * 30ms);
 }
 
 /* Respuesta táctil al tocar botones */
@@ -253,4 +253,16 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Esqueleto de carga: un brillo suave mientras llega la pantalla. */
+@utility skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--line) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  border-radius: 1rem;
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
 }

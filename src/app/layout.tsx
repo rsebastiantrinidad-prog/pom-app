@@ -5,6 +5,7 @@ import "@fontsource-variable/smooch-sans";
 import "./globals.css";
 import { isTheme, THEME_BAR, THEME_COOKIE, type Theme } from "@/lib/theme";
 import { RegisterServiceWorker } from "./_components/pwa";
+import { TabBar } from "./_components/tab-bar";
 
 export const metadata: Metadata = {
   title: "PoM",
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col">
         {children}
+        <TabBar />
         <RegisterServiceWorker />
       </body>
     </html>

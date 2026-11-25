@@ -28,6 +28,9 @@
     }
   ],
   // Logs visibles en el dashboard (Workers → pom-app → Logs)
+  // La base D1 está en ENAM (Newark). Correr el Worker cerca de ella evita que cada
+  // consulta cruce el continente desde Buenos Aires: un solo viaje largo por pantalla.
+  "placement": { "region": "aws:us-east-1" },
   "observability": {
     "enabled": true
   }

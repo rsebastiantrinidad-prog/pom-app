@@ -1,10 +1,9 @@
 import { Ambient } from "./ambient";
 import { AppHeader } from "./app-header";
-import { TabBar } from "./tab-bar";
 
 /**
  * Esqueleto de cada pantalla: encabezado, título grande opcional, contenido y
- * la barra de pestañas. Deja lugar abajo para que la barra no tape nada.
+ * lugar abajo para la barra de pestañas (que vive en el layout y no se recarga).
  */
 export function Screen({
   title,
@@ -20,8 +19,7 @@ export function Screen({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <main className="relative isolate mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-5 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
+    <main className="relative isolate mx-auto flex w-full max-w-md flex-1 flex-col gap-5 px-5 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
         <Ambient />
         <AppHeader back={back} actions={actions} />
         {title && (
@@ -31,8 +29,6 @@ export function Screen({
           </div>
         )}
         {children}
-      </main>
-      <TabBar />
-    </>
+    </main>
   );
 }
