@@ -38,12 +38,12 @@ export function HowItWorks({ pomMinutes, restMinutes }: { pomMinutes: number; re
   ];
 
   return (
-    <section className="leaf flex animate-fade-up flex-col gap-4 border border-line bg-tint/80 p-5 backdrop-blur">
+    <section id="como-funciona" className="scroll-mt-4 rounded-2xl flex animate-fade-up flex-col gap-4 border border-line bg-surface p-5 shadow-[var(--shadow)]">
       <h2 className="font-display text-3xl font-bold leading-none">Cómo funciona</h2>
       <ul className="flex flex-col gap-4">
         {items.map(({ icon: Icon, title, text }) => (
           <li key={title} className="flex gap-3">
-            <span className="leaf-sm grid size-9 shrink-0 place-items-center bg-primary/10 text-primary">
+            <span className="rounded-xl grid size-9 shrink-0 place-items-center bg-primary/10 text-primary">
               <Icon className="size-5" />
             </span>
             <div className="flex flex-col gap-0.5">

@@ -3,6 +3,7 @@
 import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { SUMMARY_SEEN_COOKIE } from "@/lib/summary-cookie";
+import { isTheme, THEME_COOKIE } from "@/lib/theme";
 import { getSettings, saveSchedule } from "@/lib/db";
 import { savePhoneApps, saveUsage } from "@/lib/db/phone";
 import { discardPom, getRunningPom, interruptPom, ratePom, startPom } from "@/lib/db/poms";
@@ -218,5 +219,17 @@ export async function dismissSummaryAction(day: string): Promise<ActionResult> {
     maxAge: 3 * 24 * 60 * 60,
   });
   refresh();
+  return { ok: true };
+}
+
+/** Guarda el tema elegido (Sistema / Claro / Oscuro). La página ya lo aplicó al instante. */
+export async function setThemeAction(theme: string): Promise<ActionResult> {
+  if (!isTheme(theme)) return { ok: false, error: "Tema inválido." };
+  (await cookies()).set(THEME_COOKIE, theme, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 400 * 24 * 60 * 60,
+  });
   return { ok: true };
 }

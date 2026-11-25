@@ -165,7 +165,7 @@ export function PomTimer({
           type="button"
           disabled={remaining === 0}
           onClick={() => setSheet("interrupt")}
-          className="press flex items-center gap-2 rounded-full border border-line bg-background/60 px-6 py-3 font-bold backdrop-blur-md hover:border-primary"
+          className="press flex items-center gap-2 rounded-full border border-line bg-surface px-6 py-3 font-bold backdrop-blur-md hover:border-primary"
         >
           <PauseCircle className="size-5 text-primary" />
           Interrumpir
@@ -179,7 +179,7 @@ export function PomTimer({
             role="dialog"
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
-            className="leaf mx-auto mb-[max(1rem,env(safe-area-inset-bottom))] flex w-[min(100%-2rem,28rem)] animate-sheet flex-col gap-4 border border-line bg-background p-5 shadow-2xl shadow-black/20"
+            className="rounded-2xl mx-auto mb-[max(1rem,env(safe-area-inset-bottom))] flex w-[min(100%-2rem,28rem)] animate-sheet flex-col gap-4 border border-line bg-background p-5 shadow-2xl shadow-black/20"
           >
             <div className="flex items-start justify-between gap-4">
               <h2 className="font-display text-3xl font-bold leading-none">
@@ -208,13 +208,13 @@ export function PomTimer({
                   rows={3}
                   maxLength={1000}
                   placeholder="Ej.: me llamaron por una urgencia"
-                  className="leaf-sm resize-none border border-line bg-tint px-3 py-2 text-base placeholder:text-muted focus:border-primary focus:outline-none"
+                  className="rounded-xl resize-none border border-line bg-tint px-3 py-2 text-base placeholder:text-muted focus:border-primary focus:outline-none"
                 />
                 {error && <p className="text-sm text-red-600">{error}</p>}
                 <button
                   type="submit"
                   disabled={!note.trim() || pending}
-                  className="press leaf bg-primary py-3 font-display text-2xl font-bold text-primary-fg disabled:opacity-35"
+                  className="press rounded-2xl bg-primary py-3 font-display text-2xl font-bold text-primary-fg disabled:opacity-35"
                 >
                   {pending ? "Guardando…" : "Interrumpir bloque"}
                 </button>
@@ -230,7 +230,7 @@ export function PomTimer({
                   type="button"
                   disabled={pending || !discardable}
                   onClick={() => run(() => discardPomAction(pom.id))}
-                  className="press leaf bg-foreground py-3 font-display text-2xl font-bold text-background disabled:opacity-35"
+                  className="press rounded-2xl bg-primary py-3 font-display text-2xl font-bold text-primary-fg disabled:opacity-35"
                 >
                   {pending ? "Descartando…" : "Sí, descartar"}
                 </button>

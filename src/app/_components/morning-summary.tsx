@@ -2,16 +2,17 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { BarChart3, Moon, Smartphone, Sunrise, X } from "lucide-react";
+import { Moon, Smartphone, Sunrise } from "lucide-react";
 import { dismissSummaryAction } from "@/app/actions";
 import { averageRating, formatDuration, SECTORS, type DaySummary, type PomDay } from "@/lib/pom";
 import { SECTOR_SHORT, SectorSwatch } from "./charts";
+import { Sheet } from "./sheet";
 
 const stars = (v: number | null) => (v == null ? "—" : `${v.toFixed(1)}★`);
 
 /**
- * Resumen matinal (PER-99): la primera vez que se abre la app en un día PoM nuevo,
- * muestra cómo fue el anterior. Al cerrarla no vuelve a aparecer ese día.
+ * Resumen matinal (PER-99): la primera vez que se abre la app en un día PoM
+ * nuevo, sube una hoja con cómo fue el anterior. Al cerrarla no vuelve ese día.
  */
 export function MorningSummary({ today, summary }: { today: PomDay; summary: DaySummary }) {
   const [hidden, setHidden] = useState(false);
@@ -27,49 +28,35 @@ export function MorningSummary({ today, summary }: { today: PomDay; summary: Day
 
   const s = summary;
   return (
-    <section
-      aria-label="Resumen de ayer"
-      className="leaf relative flex animate-pop flex-col gap-4 overflow-hidden border border-line bg-background/80 p-5 shadow-xl shadow-primary/15 backdrop-blur"
-    >
-      <span
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[var(--dbp-violet)] via-[var(--dbp-indigo)] to-[var(--dbp-teal)]"
-      />
-      <div className="flex items-start justify-between gap-3">
+    <Sheet
+      label="Resumen de ayer"
+      onClose={close}
+      title={
         <div className="flex flex-col gap-1">
           <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.18em] text-muted">
             <Sunrise className="size-4 text-accent-strong" /> Buen día
           </span>
           <h2 className="font-display text-4xl font-bold leading-none">Así fue ayer</h2>
         </div>
-        <button
-          type="button"
-          onClick={close}
-          aria-label="Cerrar resumen"
-          className="press grid size-10 shrink-0 place-items-center rounded-full border border-line text-muted hover:text-primary"
-        >
-          <X className="size-5" />
-        </button>
-      </div>
-
-      {/* PoM */}
-      <div className="grid grid-cols-3 gap-2">
+      }
+    >
+      <div className="grid grid-cols-3 gap-2 text-center">
         {[
-          { label: "PoM completados", value: String(s.completedTotal), cls: "text-accent" },
-          { label: "Interrumpidos", value: String(s.interruptedTotal), cls: "text-primary" },
-          { label: "Valoración", value: stars(averageRating(s)), cls: "text-star" },
+          { label: "Completados", value: String(s.completedTotal) },
+          { label: "Interrumpidos", value: String(s.interruptedTotal) },
+          { label: "Valoración", value: stars(averageRating(s)) },
         ].map((x) => (
-          <div key={x.label} className="leaf-sm flex flex-col gap-1 bg-tint p-3">
-            <span className={`font-display text-4xl font-bold leading-none ${x.cls}`}>{x.value}</span>
-            <span className="text-[11px] font-semibold leading-tight text-muted">{x.label}</span>
+          <div key={x.label} className="flex flex-col gap-1 rounded-2xl bg-surface-2 py-3">
+            <span className="font-display text-3xl font-bold leading-none">{x.value}</span>
+            <span className="text-[11px] font-semibold text-muted">{x.label}</span>
           </div>
         ))}
       </div>
 
-      <ul className="flex flex-col gap-1.5 text-sm">
+      <ul className="flex flex-col divide-y divide-line">
         {SECTORS.map((sec) => (
-          <li key={sec} className="flex items-center gap-2">
-            <SectorSwatch sector={sec} />
+          <li key={sec} className="flex items-center gap-2 py-2 text-sm">
+            <SectorSwatch sector={sec} className="size-3" />
             <span className="flex-1 font-semibold">{SECTOR_SHORT[sec]}</span>
             <span className="tabular-nums">
               <b>{s.completed[sec]}</b> PoM
@@ -78,56 +65,36 @@ export function MorningSummary({ today, summary }: { today: PomDay; summary: Day
             </span>
           </li>
         ))}
+        <li className="flex items-center gap-2 py-2 text-sm">
+          <Moon className="size-3.5 text-muted" />
+          <span className="flex-1 font-semibold">Sueño</span>
+          <span className={s.sleepMinutes == null ? "text-muted" : "font-bold"}>
+            {s.sleepMinutes == null ? "sin dato" : formatDuration(s.sleepMinutes)}
+          </span>
+        </li>
+        <li className="flex items-center gap-2 py-2 text-sm">
+          <Smartphone className="size-3.5 text-muted" />
+          <span className="flex-1 font-semibold">Uso del móvil</span>
+          <span className={s.phoneTotal == null ? "text-muted" : "font-bold"}>
+            {s.phoneTotal == null ? "sin dato" : formatDuration(s.phoneTotal)}
+          </span>
+        </li>
       </ul>
-
-      {/* Sueño y móvil */}
-      <div className="grid grid-cols-2 gap-2">
-        <div className="leaf-sm flex flex-col gap-1 bg-tint p-3">
-          <span className="flex items-center gap-1.5 text-xs font-bold text-muted">
-            <Moon className="size-3.5" /> Sueño
-          </span>
-          <span className="font-display text-2xl font-bold leading-none">
-            {s.sleepMinutes == null ? <span className="text-muted">sin dato</span> : formatDuration(s.sleepMinutes)}
-          </span>
-        </div>
-        <div className="leaf-sm flex flex-col gap-1 bg-tint p-3">
-          <span className="flex items-center gap-1.5 text-xs font-bold text-muted">
-            <Smartphone className="size-3.5" /> Móvil
-          </span>
-          {s.phoneTotal == null ? (
-            <Link href="/movil" className="font-display text-2xl font-bold leading-none text-primary underline">
-              Cargar
-            </Link>
-          ) : (
-            <span className="font-display text-2xl font-bold leading-none">{formatDuration(s.phoneTotal)}</span>
-          )}
-        </div>
-      </div>
-      {s.phone && (
-        <p className="-mt-2 text-xs text-muted">
-          {s.phone
-            .filter((u) => u.minutes > 0)
-            .map((u) => `${u.app} ${formatDuration(u.minutes)}`)
-            .join(" · ")}
-        </p>
-      )}
 
       <div className="flex gap-2">
         {s.phoneTotal == null && (
           <Link
             href="/movil"
-            className="press leaf-sm flex flex-1 items-center justify-center gap-2 bg-primary py-3 font-bold text-primary-fg"
+            onClick={close}
+            className="press flex flex-1 items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 font-bold text-primary-fg"
           >
-            <Smartphone className="size-4" /> Cargar uso del móvil
+            <Smartphone className="size-4" /> Cargar móvil
           </Link>
         )}
-        <Link
-          href="/avance"
-          className="press leaf-sm flex flex-1 items-center justify-center gap-2 border border-line py-3 font-bold"
-        >
-          <BarChart3 className="size-4" /> Ver avance
-        </Link>
+        <button type="button" onClick={close} className="press flex-1 rounded-2xl bg-surface-2 py-3.5 font-bold">
+          Empezar el día
+        </button>
       </div>
-    </section>
+    </Sheet>
   );
 }

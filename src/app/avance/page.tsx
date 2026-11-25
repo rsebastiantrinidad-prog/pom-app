@@ -16,9 +16,10 @@ import {
   type PomDay,
 } from "@/lib/pom";
 import { getSettings } from "@/lib/db";
+import { getGameStats } from "@/lib/db/game";
 import { getDaySummaries } from "@/lib/db/summary";
-import { Ambient } from "../_components/ambient";
-import { AppHeader } from "../_components/app-header";
+import { Achievements, StreakLevel } from "../_components/game";
+import { Screen } from "../_components/screen";
 import { HoursBars, PomBars, SectorLegend, SectorSwatch, SECTOR_SHORT, shortDuration } from "../_components/charts";
 
 export const metadata: Metadata = { title: "Avance · PoM" };
@@ -79,7 +80,7 @@ async function Progress({ searchParams }: { searchParams: Promise<Params> }) {
   const switched = g === "dia" && nDays > MAX_DAY_ROWS;
   if (switched) g = "semana";
 
-  const days = await getDaySummaries(from, to, now);
+  const [days, game] = await Promise.all([getDaySummaries(from, to, now), getGameStats(settings, now)]);
   const periods = groupSummaries(days, g);
   const totals = combineSummaries(days);
   const interruptions = days.flatMap((d) => d.interruptions).reverse();
@@ -96,98 +97,69 @@ async function Progress({ searchParams }: { searchParams: Promise<Params> }) {
   const unit = g === "dia" ? "" : g === "semana" ? " por semana" : " por mes";
   const avgNote = g === "dia" ? "" : " (promedio por día con dato)";
 
-  const card = "leaf flex flex-col gap-4 border border-line bg-background/70 p-4 backdrop-blur";
-  const chip = "press rounded-full border px-1 py-2 text-center text-xs font-bold whitespace-nowrap";
+  const card = "card flex flex-col gap-4 p-4";
+  const field = "min-w-0 rounded-xl border border-line bg-surface-2 px-2 py-2 text-base text-foreground";
 
   return (
     <>
-      {/* Rango */}
-      <div className="flex animate-fade-up flex-col gap-3">
-        <div className="grid grid-cols-4 gap-1.5">
+      {/* Rango: atajos y rango personalizado plegado */}
+      <div className="flex animate-fade-up flex-col gap-2">
+        <div className="grid grid-cols-4 gap-1 rounded-2xl bg-surface-2 p-1">
           {presets.map((p) => (
             <Link
               key={p.label}
               href={`/avance?desde=${addPomDays(today, -(p.days - 1))}&hasta=${today}&por=${p.por}`}
-              className={`${chip} ${isActive(p) ? "border-primary bg-primary text-primary-fg" : "border-line bg-background/70"}`}
+              className={`press whitespace-nowrap rounded-xl py-2 text-center text-xs font-bold ${
+                isActive(p) ? "bg-surface text-foreground shadow-sm" : "text-muted"
+              }`}
               scroll={false}
             >
               {p.label}
             </Link>
           ))}
         </div>
-        <form
-          action="/avance"
-          className="leaf-sm grid grid-cols-2 gap-2 border border-line bg-background/60 p-3 backdrop-blur"
-        >
-          <label className="flex min-w-0 flex-col gap-1 text-xs font-semibold text-muted">
-            Desde
-            <input
-              type="date"
-              name="desde"
-              defaultValue={from}
-              max={today}
-              className="leaf-sm min-w-0 border border-line bg-tint px-2 py-2 text-base text-foreground"
-            />
-          </label>
-          <label className="flex min-w-0 flex-col gap-1 text-xs font-semibold text-muted">
-            Hasta
-            <input
-              type="date"
-              name="hasta"
-              defaultValue={to}
-              max={today}
-              className="leaf-sm min-w-0 border border-line bg-tint px-2 py-2 text-base text-foreground"
-            />
-          </label>
-          <label className="flex min-w-0 flex-col gap-1 text-xs font-semibold text-muted">
-            Ver por
-            <select
-              name="por"
-              defaultValue={g}
-              className="leaf-sm min-w-0 border border-line bg-tint px-2 py-2 text-base text-foreground"
-            >
-              <option value="dia">Día</option>
-              <option value="semana">Semana</option>
-              <option value="mes">Mes</option>
-            </select>
-          </label>
-          <button type="submit" className="press leaf-sm self-end bg-foreground py-2.5 font-bold text-background">
-            Ver
-          </button>
-        </form>
+        <details className="group" open={!presets.some(isActive)}>
+          <summary className="cursor-pointer list-none px-1 text-sm font-bold text-primary">
+            {presets.some(isActive) ? "Elegir fechas" : `${dayMonth(from)} → ${dayMonth(to)}`}
+          </summary>
+          <form action="/avance" className="card mt-2 grid grid-cols-2 gap-2 p-3">
+            <label className="flex min-w-0 flex-col gap-1 text-xs font-semibold text-muted">
+              Desde
+              <input type="date" name="desde" defaultValue={from} max={today} className={field} />
+            </label>
+            <label className="flex min-w-0 flex-col gap-1 text-xs font-semibold text-muted">
+              Hasta
+              <input type="date" name="hasta" defaultValue={to} max={today} className={field} />
+            </label>
+            <label className="flex min-w-0 flex-col gap-1 text-xs font-semibold text-muted">
+              Ver por
+              <select name="por" defaultValue={g} className={field}>
+                <option value="dia">Día</option>
+                <option value="semana">Semana</option>
+                <option value="mes">Mes</option>
+              </select>
+            </label>
+            <button type="submit" className="press self-end rounded-xl bg-primary py-2.5 font-bold text-primary-fg">
+              Ver
+            </button>
+          </form>
+        </details>
         {switched && <p className="text-xs text-muted">Son muchos días para verlos de a uno: se agrupan por semana.</p>}
       </div>
 
       {/* Resumen del rango */}
-      {
-        <div className="grid animate-fade-up grid-cols-3 gap-2 [animation-delay:60ms]">
-          {[
-            {
-              label: "PoM completados",
-              value: String(totals.completedTotal),
-              cls: "text-accent",
-            },
-            {
-              label: "Interrumpidos",
-              value: String(totals.interruptedTotal),
-              cls: "text-primary",
-            },
-            {
-              label: "Valoración",
-              value: stars(averageRating(totals)) ?? "—",
-              cls: "text-star",
-            },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="leaf-sm flex flex-col gap-1 border border-line bg-background/60 p-3 backdrop-blur"
-            >
-              <span className={`font-display text-4xl font-bold leading-none ${s.cls}`}>{s.value}</span>
-              <span className="text-[11px] font-semibold leading-tight text-muted">{s.label}</span>
-            </div>
-          ))}
-        </div>
-      }
+      <div className="card grid animate-fade-up grid-cols-3 divide-x divide-line py-4 text-center [animation-delay:60ms]">
+        {[
+          { label: "Completados", value: String(totals.completedTotal) },
+          { label: "Interrumpidos", value: String(totals.interruptedTotal) },
+          { label: "Valoración", value: stars(averageRating(totals)) ?? "—" },
+        ].map((s) => (
+          <div key={s.label} className="flex flex-col gap-1">
+            <span className="font-display text-4xl font-bold leading-none">{s.value}</span>
+            <span className="text-[11px] font-semibold text-muted">{s.label}</span>
+          </div>
+        ))}
+      </div>
 
       {/* PER-100: PoM por sector */}
       <section className={`${card} animate-fade-up [animation-delay:120ms]`}>
@@ -244,11 +216,11 @@ async function Progress({ searchParams }: { searchParams: Promise<Params> }) {
       <section className="flex animate-fade-up flex-col gap-3 [animation-delay:300ms]">
         <h2 className="font-display text-3xl font-bold leading-none">Interrumpidos</h2>
         {interruptions.length === 0 ? (
-          <p className="text-sm text-muted">Ningún PoM interrumpido en este rango.</p>
+          <p className="card px-4 py-4 text-sm text-muted">Ningún PoM interrumpido en este rango.</p>
         ) : (
-          <ul className="flex flex-col gap-2">
+          <ul className="card divide-y divide-line">
             {interruptions.map((i) => (
-              <li key={i.id} className="leaf-sm flex flex-col gap-1 border border-warn-line bg-warn-soft px-4 py-3">
+              <li key={i.id} className="flex flex-col gap-1 px-4 py-3">
                 <span className="flex items-center gap-2 text-xs font-semibold text-muted">
                   <PauseCircle className="size-3.5 text-primary" />
                   <span>{dayMonth(i.pom_day)}</span> · {formatLocalTime(i.started_at)} ·
@@ -261,22 +233,22 @@ async function Progress({ searchParams }: { searchParams: Promise<Params> }) {
           </ul>
         )}
       </section>
+
+      {/* Gamificación: nivel, racha y logros */}
+      <section className="flex animate-fade-up flex-col gap-3">
+        <StreakLevel streak={game.streak} level={game.level} />
+      </section>
+      <Achievements items={game.achievements} />
     </>
   );
 }
 
 export default function AvancePage({ searchParams }: { searchParams: Promise<Params> }) {
   return (
-    <main className="relative isolate mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 pb-10 pt-[max(1.5rem,env(safe-area-inset-top))]">
-      <Ambient />
-      <AppHeader back />
-      <div className="flex animate-fade-up flex-col gap-1">
-        <h1 className="font-display text-5xl font-bold leading-none">Avance</h1>
-        <p className="text-sm text-muted">Tus PoM, tu sueño y el uso del móvil, día a día.</p>
-      </div>
+    <Screen title="Avance" subtitle="Tus PoM, tu sueño y el uso del móvil.">
       <Suspense fallback={<p className="text-sm text-muted">Cargando…</p>}>
         <Progress searchParams={searchParams} />
       </Suspense>
-    </main>
+    </Screen>
   );
 }

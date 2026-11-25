@@ -1,29 +1,49 @@
 "use client";
 
 import { useState } from "react";
-import { PartyPopper } from "lucide-react";
-import { type PomSession } from "@/lib/pom";
+import { PartyPopper, Sparkles } from "lucide-react";
+import { XP_PER_POM, type Level, type PomSession } from "@/lib/pom";
 import { RatingForm } from "./rating";
 import { SectorTag } from "./sector-tag";
+import { Sheet } from "./sheet";
 
-/** Aparece cuando el último bloque terminó y todavía no se valoró (PER-85 y PER-109). */
-export function FinishedCard({ pom }: { pom: PomSession }) {
+/**
+ * Bloque terminado (PER-85, PER-109): hoja inferior con la recompensa (+XP) y
+ * la valoración. Se puede cerrar y valorar después desde "Hoy".
+ */
+export function FinishedCard({ pom, level }: { pom: PomSession; level: Level }) {
   const [hidden, setHidden] = useState(false);
   if (hidden) return null;
+  const pct = level.to > level.from ? ((level.xp - level.from) / (level.to - level.from)) * 100 : 0;
   return (
-    <section className="leaf relative flex animate-pop flex-col gap-3 overflow-hidden border border-accent-line bg-accent-soft/80 p-5 backdrop-blur-xl">
-      <div aria-hidden className="absolute -right-10 -top-10 size-40 animate-breathe rounded-full bg-accent/20 blur-2xl" />
-      <div className="relative flex flex-col gap-1">
-        <p className="flex items-center gap-2 font-display text-4xl font-bold leading-none text-accent-strong">
-          <PartyPopper className="size-7" /> ¡Bloque terminado!
+    <Sheet
+      label="Bloque terminado"
+      onClose={() => setHidden(true)}
+      title={
+        <p className="flex items-center gap-2 font-display text-4xl font-bold leading-none">
+          <PartyPopper className="size-7 text-accent-strong" /> ¡Bloque terminado!
         </p>
-        <SectorTag sector={pom.sector} className="text-sm font-semibold text-muted" />
-        <p className="font-bold">{pom.objective}</p>
+      }
+    >
+      <div className="flex items-center gap-3 rounded-2xl bg-surface-2 p-3">
+        <span className="grid size-11 shrink-0 animate-pop place-items-center rounded-full bg-gradient-to-br from-[var(--dbp-teal)] to-[var(--dbp-violet)] text-white">
+          <Sparkles className="size-5" />
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <p className="text-sm font-bold">
+            +{XP_PER_POM} XP · Nivel {level.level}
+          </p>
+          <div className="h-1.5 overflow-hidden rounded-full bg-line">
+            <div className="h-full rounded-full bg-gradient-to-r from-[var(--dbp-teal)] to-[var(--dbp-violet)]" style={{ width: `${pct}%` }} />
+          </div>
+        </div>
       </div>
-      <p className="relative text-sm font-semibold">¿Cómo te fue?</p>
-      <div className="relative">
-        <RatingForm pomId={pom.id} initialRating={null} initialNote={null} onDone={() => setHidden(true)} />
+      <div className="flex flex-col gap-1">
+        <SectorTag sector={pom.sector} className="text-xs font-semibold text-muted" />
+        <p className="font-bold leading-snug">{pom.objective}</p>
       </div>
-    </section>
+      <p className="text-sm font-semibold">¿Cómo te fue?</p>
+      <RatingForm pomId={pom.id} initialRating={null} initialNote={null} onDone={() => setHidden(true)} />
+    </Sheet>
   );
 }

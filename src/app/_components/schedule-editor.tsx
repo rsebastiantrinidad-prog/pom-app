@@ -6,7 +6,7 @@ import { saveScheduleAction } from "@/app/actions";
 import { SECTOR_LABELS, SECTORS, type ScheduleSlot, type Sector } from "@/lib/pom";
 
 const input =
-  "leaf-sm border border-line bg-background px-2 py-1.5 text-base focus:border-primary focus:outline-none";
+  "rounded-xl border border-line bg-background px-2 py-1.5 text-base focus:border-primary focus:outline-none";
 
 /** Editor del esquema horario (PER-89) y de las pistas de foco (PER-93). */
 export function ScheduleEditor({ initial, initialShowHints }: { initial: ScheduleSlot[]; initialShowHints: boolean }) {
@@ -37,7 +37,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
         <fieldset
           key={i}
           style={{ "--i": i } as React.CSSProperties}
-          className="stagger leaf flex animate-fade-up flex-col gap-3 border border-line bg-background/70 p-4 backdrop-blur"
+          className="stagger rounded-2xl flex animate-fade-up flex-col gap-3 border border-line bg-surface p-4 shadow-[var(--shadow)]"
         >
           <div className="flex items-center gap-2">
             <input
@@ -131,12 +131,12 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
         onClick={() =>
           setSlots((all) => [...all, { start: "00:00", end: "01:00", label: "Nueva franja", sector: null, pom_count: null }])
         }
-        className="press leaf-sm flex items-center justify-center gap-2 border border-dashed border-primary py-3 font-bold text-primary"
+        className="press rounded-xl flex items-center justify-center gap-2 border border-dashed border-primary py-3 font-bold text-primary"
       >
         <Plus className="size-4" /> Agregar franja
       </button>
 
-      <label className="leaf flex items-center justify-between gap-3 border border-line bg-background/70 p-4 backdrop-blur">
+      <label className="rounded-2xl flex items-center justify-between gap-3 border border-line bg-surface p-4 shadow-[var(--shadow)]">
         <span>
           <span className="block font-bold">Mostrar foco sugerido</span>
           <span className="text-sm text-muted">La pista aparece al iniciar y durante el bloque.</span>
@@ -157,7 +157,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
       <button
         type="submit"
         disabled={pending}
-        className="press leaf sticky bottom-4 bg-gradient-to-r from-[var(--dbp-violet)] to-[var(--dbp-indigo)] py-4 font-display text-3xl font-bold text-white shadow-xl shadow-primary/30 disabled:opacity-50"
+        className="press rounded-2xl sticky bottom-[calc(5.75rem+env(safe-area-inset-bottom))] bg-primary py-4 font-display text-3xl font-bold text-primary-fg shadow-lg shadow-primary/25 disabled:opacity-50"
       >
         {pending ? "Guardando…" : "Guardar"}
       </button>

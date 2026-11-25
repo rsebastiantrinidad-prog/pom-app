@@ -65,7 +65,7 @@ export function SleepScreen({ session, serverNow }: { session: SleepSession; ser
           <p className="text-lg font-semibold text-white/70">{formatMinutes(mins)}</p>
         </div>
         {forgotten && !editing && (
-          <p className="leaf-sm max-w-xs border border-white/15 bg-white/5 px-4 py-3 text-sm text-white/80">
+          <p className="rounded-xl max-w-xs border border-white/15 bg-white/5 px-4 py-3 text-sm text-white/80">
             Hace más de 14 horas que está abierta. ¿Te olvidaste de marcar “Desperté”? Poné la hora real.
           </p>
         )}
@@ -75,7 +75,7 @@ export function SleepScreen({ session, serverNow }: { session: SleepSession; ser
         {error && <p className="text-sm font-semibold text-red-300">{error}</p>}
         {editing ? (
           <form
-            className="leaf flex w-full max-w-sm animate-sheet flex-col gap-3 border border-white/15 bg-white/10 p-4 backdrop-blur-md"
+            className="rounded-2xl flex w-full max-w-sm animate-sheet flex-col gap-3 border border-white/15 bg-white/10 p-4 backdrop-blur-md"
             onSubmit={(e) => {
               e.preventDefault();
               if (end) save(end);
@@ -89,7 +89,7 @@ export function SleepScreen({ session, serverNow }: { session: SleepSession; ser
                 min={toLocalInput(new Date(session.started_at))}
                 max={toLocalInput(at)}
                 onChange={(e) => setEnd(e.target.value)}
-                className="leaf-sm border border-white/20 bg-black/30 px-3 py-2 text-base text-white [color-scheme:dark] focus:border-[var(--dbp-teal-200)] focus:outline-none"
+                className="rounded-xl border border-white/20 bg-black/30 px-3 py-2 text-base text-white [color-scheme:dark] focus:border-[var(--dbp-teal-200)] focus:outline-none"
               />
             </label>
             <div className="flex gap-2">
@@ -99,7 +99,7 @@ export function SleepScreen({ session, serverNow }: { session: SleepSession; ser
               <button
                 type="submit"
                 disabled={!end || pending}
-                className="press leaf flex-1 bg-white py-3 font-display text-2xl font-bold text-[var(--dbp-violet-900)] disabled:opacity-40"
+                className="press rounded-2xl flex-1 bg-white py-3 font-display text-2xl font-bold text-[var(--dbp-violet-900)] disabled:opacity-40"
               >
                 {pending ? "Guardando…" : "Guardar"}
               </button>
@@ -111,7 +111,7 @@ export function SleepScreen({ session, serverNow }: { session: SleepSession; ser
               type="button"
               disabled={pending}
               onClick={() => (forgotten ? openEditor() : save())}
-              className="press leaf flex w-full max-w-sm items-center justify-center gap-3 bg-gradient-to-r from-[var(--dbp-teal)] to-[var(--dbp-teal-200)] py-4 font-display text-3xl font-bold text-[var(--dbp-violet-900)] shadow-xl shadow-[var(--dbp-teal)]/20 disabled:opacity-50"
+              className="press rounded-2xl flex w-full max-w-sm items-center justify-center gap-3 bg-gradient-to-r from-[var(--dbp-teal)] to-[var(--dbp-teal-200)] py-4 font-display text-3xl font-bold text-[var(--dbp-violet-900)] shadow-xl shadow-[var(--dbp-teal)]/20 disabled:opacity-50"
             >
               <Sun className="size-7" />
               {pending ? "Guardando…" : "Desperté"}

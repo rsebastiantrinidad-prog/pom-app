@@ -67,7 +67,7 @@ export function RatingForm({
         onChange={(e) => setNote(e.target.value)}
         maxLength={500}
         placeholder="Comentario (opcional)"
-        className="leaf-sm border border-line bg-background px-3 py-2.5 text-base placeholder:text-muted focus:border-primary focus:outline-none"
+        className="rounded-xl border border-line bg-surface px-3 py-2.5 text-base placeholder:text-muted focus:border-primary focus:outline-none"
       />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export function RatingForm({
         <button
           type="submit"
           disabled={!rating || pending}
-          className="press leaf-sm ml-auto bg-primary px-6 py-2.5 font-bold text-primary-fg disabled:opacity-35"
+          className="press ml-auto rounded-xl bg-primary px-6 py-2.5 font-bold text-primary-fg disabled:opacity-35"
         >
           {pending ? "Guardando…" : "Guardar"}
         </button>

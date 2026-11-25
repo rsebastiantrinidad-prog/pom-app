@@ -9,7 +9,7 @@ import { formatDuration, parseHoursMinutes, type PomDay } from "@/lib/pom";
 type Row = { app: string; hidden: boolean; hours: string; minutes: string };
 
 const field =
-  "leaf-sm w-full min-w-0 border border-line bg-tint px-2 py-2 text-center text-lg font-bold tabular-nums focus:border-primary focus:bg-background focus:outline-none";
+  "rounded-xl w-full min-w-0 border border-line bg-tint px-2 py-2 text-center text-lg font-bold tabular-nums focus:border-primary focus:bg-background focus:outline-none";
 
 /**
  * Carga del uso del móvil (PER-96): horas y minutos por app para un día PoM.
@@ -52,7 +52,7 @@ export function PhoneUsageForm({
     setRows((all) => all.map((r, j) => (j === i ? { ...r, ...patch } : r)));
   };
 
-  const navBtn = "press grid size-11 place-items-center rounded-full border border-line bg-background/70 backdrop-blur";
+  const navBtn = "press grid size-11 place-items-center rounded-full border border-line bg-surface  shadow-[var(--shadow)]";
 
   return (
     <form
@@ -69,7 +69,7 @@ export function PhoneUsageForm({
       }}
     >
       {/* Selector de día */}
-      <div className="leaf flex animate-fade-up items-center justify-between gap-2 border border-line bg-background/70 p-2 backdrop-blur">
+      <div className="rounded-2xl flex animate-fade-up items-center justify-between gap-2 border border-line bg-surface p-2 shadow-[var(--shadow)]">
         <Link href={`/movil?dia=${prevDay}`} className={navBtn} aria-label="Día anterior" scroll={false}>
           <ChevronLeft className="size-5" />
         </Link>
@@ -87,7 +87,7 @@ export function PhoneUsageForm({
       </div>
 
       {/* Total */}
-      <div className="leaf flex animate-fade-up items-end justify-between border border-line bg-gradient-to-br from-[var(--dbp-violet)] to-[var(--dbp-indigo)] p-5 text-white shadow-xl shadow-primary/25 [animation-delay:80ms]">
+      <div className="rounded-2xl flex animate-fade-up items-end justify-between border border-line bg-gradient-to-br from-[var(--dbp-violet)] to-[var(--dbp-indigo)] p-5 text-white shadow-xl shadow-primary/25 [animation-delay:80ms]">
         <span className="text-sm font-bold uppercase tracking-[0.18em] text-white/75">Total del día</span>
         <span className="font-display text-5xl font-bold leading-none">{formatDuration(total)}</span>
       </div>
@@ -98,7 +98,7 @@ export function PhoneUsageForm({
           <li
             key={r.app}
             style={{ "--i": i } as React.CSSProperties}
-            className="stagger leaf-sm flex animate-fade-up items-center gap-3 border border-line bg-background/60 p-3 backdrop-blur"
+            className="stagger rounded-xl flex animate-fade-up items-center gap-3 border border-line bg-surface p-3 shadow-[var(--shadow)]"
           >
             <span className="min-w-0 flex-1 truncate font-bold">
               {r.app}
@@ -139,7 +139,7 @@ export function PhoneUsageForm({
       <button
         type="submit"
         disabled={pending || invalid}
-        className="press leaf sticky bottom-4 bg-gradient-to-r from-[var(--dbp-violet)] to-[var(--dbp-indigo)] py-4 font-display text-3xl font-bold text-white shadow-xl shadow-primary/30 disabled:opacity-50"
+        className="press rounded-2xl sticky bottom-[calc(5.75rem+env(safe-area-inset-bottom))] bg-primary py-4 font-display text-3xl font-bold text-primary-fg shadow-lg shadow-primary/25 disabled:opacity-50"
       >
         {pending ? "Guardando…" : "Guardar"}
       </button>

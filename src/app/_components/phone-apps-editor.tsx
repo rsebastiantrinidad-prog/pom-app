@@ -42,14 +42,14 @@ export function PhoneAppsEditor({ initial }: { initial: PhoneApp[] }) {
         {apps.map((a, i) => (
           <li
             key={a.id}
-            className={`leaf-sm flex items-center gap-2 border border-line bg-background/70 p-2 backdrop-blur transition-opacity ${a.hidden ? "opacity-60" : ""}`}
+            className={`rounded-xl flex items-center gap-2 border border-line bg-surface p-2 shadow-[var(--shadow)] transition-opacity ${a.hidden ? "opacity-60" : ""}`}
           >
             <input
               aria-label="Nombre de la app"
               value={a.name}
               onChange={(e) => update(i, { name: e.target.value })}
               maxLength={40}
-              className="leaf-sm min-w-0 flex-1 border border-transparent bg-transparent px-2 py-1.5 text-base font-bold focus:border-primary focus:outline-none"
+              className="rounded-xl min-w-0 flex-1 border border-transparent bg-transparent px-2 py-1.5 text-base font-bold focus:border-primary focus:outline-none"
             />
             {saved.has(a.id) ? (
               <button
@@ -80,7 +80,7 @@ export function PhoneAppsEditor({ initial }: { initial: PhoneApp[] }) {
           setMsg(null);
           setApps((all) => [...all, { id: crypto.randomUUID().slice(0, 8), name: "", hidden: false }]);
         }}
-        className="press leaf-sm flex items-center justify-center gap-2 border border-dashed border-primary py-3 font-bold text-primary"
+        className="press rounded-xl flex items-center justify-center gap-2 border border-dashed border-primary py-3 font-bold text-primary"
       >
         <Plus className="size-4" /> Agregar app
       </button>
@@ -90,7 +90,7 @@ export function PhoneAppsEditor({ initial }: { initial: PhoneApp[] }) {
       <button
         type="submit"
         disabled={pending}
-        className="press leaf bg-foreground py-3 font-display text-2xl font-bold text-background disabled:opacity-50"
+        className="press rounded-2xl bg-primary py-3 font-display text-2xl font-bold text-primary-fg disabled:opacity-50"
       >
         {pending ? "Guardando…" : "Guardar apps"}
       </button>

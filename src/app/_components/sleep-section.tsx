@@ -14,7 +14,7 @@ import {
 } from "@/lib/pom";
 
 const input =
-  "leaf-sm w-full min-w-0 border border-line bg-tint px-2 py-2 text-base focus:border-primary focus:bg-background focus:outline-none";
+  "rounded-xl w-full min-w-0 border border-line bg-tint px-2 py-2 text-base focus:border-primary focus:bg-background focus:outline-none";
 
 /**
  * Sueño (PER-94, PER-95): botón "A dormir" y las sesiones de hoy y de ayer
@@ -33,9 +33,9 @@ export function SleepSection({
   const withData = days.filter((d) => d.sessions.length);
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex animate-fade-up flex-col gap-3 [animation-delay:180ms]">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="animate-fade-up font-display text-4xl font-bold leading-none">Sueño</h2>
+        <h2 className="font-display text-3xl font-bold leading-none">Sueño</h2>
         <button
           type="button"
           disabled={pending}
@@ -46,7 +46,7 @@ export function SleepSection({
               if (!res.ok) setError(res.error);
             });
           }}
-          className="press flex animate-fade-up items-center gap-2 rounded-full bg-[var(--dbp-violet-900)] px-5 py-2.5 font-bold text-white shadow-lg shadow-[var(--dbp-violet-900)]/30 disabled:opacity-50 dark:bg-[var(--dbp-lavender)] dark:text-[var(--dbp-violet-900)]"
+          className="press flex items-center gap-2 rounded-full bg-[var(--dbp-violet-900)] px-4 py-2 text-sm font-bold text-white disabled:opacity-50 dark:bg-[var(--dbp-lavender)] dark:text-[var(--dbp-violet-900)]"
         >
           <Moon className="size-4" /> {pending ? "…" : "A dormir"}
         </button>
@@ -54,13 +54,13 @@ export function SleepSection({
       {error && <p className="text-sm text-red-600">{error}</p>}
 
       {withData.length === 0 ? (
-        <p className="animate-fade-up text-sm text-muted">
+        <p className="card px-4 py-4 text-sm text-muted">
           Tocá <b className="text-foreground">A dormir</b> al acostarte (o para una siesta) y <b className="text-foreground">Desperté</b> al
           levantarte. Si un día no lo usás, ese día queda sin dato.
         </p>
       ) : (
         withData.map((d) => (
-          <div key={d.day} className="leaf-sm flex animate-fade-up flex-col gap-2 border border-line bg-background/60 p-3 backdrop-blur">
+          <div key={d.day} className="card flex flex-col gap-2 px-4 py-3">
             <div className="flex items-baseline justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-muted">{d.label}</span>
               <span className="font-display text-2xl font-bold leading-none text-primary">
@@ -142,7 +142,7 @@ function SleepRow({ session, now }: { session: SleepSession; now: Date }) {
           <button
             type="submit"
             disabled={pending || !start}
-            className="press leaf-sm bg-primary px-4 py-2 text-sm font-bold text-primary-fg disabled:opacity-40"
+            className="press rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-fg disabled:opacity-40"
           >
             {pending ? "Guardando…" : "Guardar"}
           </button>

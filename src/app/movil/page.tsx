@@ -4,8 +4,7 @@ import { connection } from "next/server";
 import { addPomDays, getPomDay } from "@/lib/pom";
 import { getSettings } from "@/lib/db";
 import { listUsageForDay } from "@/lib/db/phone";
-import { Ambient } from "../_components/ambient";
-import { AppHeader } from "../_components/app-header";
+import { Screen } from "../_components/screen";
 import { PhoneUsageForm } from "../_components/phone-usage-form";
 
 export const metadata: Metadata = { title: "Uso del móvil · PoM" };
@@ -52,16 +51,10 @@ async function Usage({ searchParams }: { searchParams: Promise<{ dia?: string | 
 
 export default function MovilPage({ searchParams }: { searchParams: Promise<{ dia?: string | string[] }> }) {
   return (
-    <main className="relative isolate mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 pb-10 pt-[max(1.5rem,env(safe-area-inset-top))]">
-      <Ambient />
-      <AppHeader back />
-      <div className="flex animate-fade-up flex-col gap-1">
-        <h1 className="font-display text-5xl font-bold leading-none">Uso del móvil</h1>
-        <p className="text-sm text-muted">Cuánto tiempo pasaste en cada app.</p>
-      </div>
+    <Screen back="/mas" title="Uso del móvil" subtitle="Cuánto tiempo pasaste en cada app.">
       <Suspense fallback={<p className="text-sm text-muted">Cargando…</p>}>
         <Usage searchParams={searchParams} />
       </Suspense>
-    </main>
+    </Screen>
   );
 }
