@@ -40,6 +40,13 @@
   --warn-line: var(--dbp-violet-300);
   --star: var(--dbp-violet);
   --star-off: var(--dbp-lavender);
+
+  /* Sectores: tonos de la paleta elegidos para distinguirse entre sí
+     (validados para daltonismo; los gráficos suman textura y etiquetas). */
+  --sector-estudio: var(--dbp-violet-900);
+  --sector-personal: var(--dbp-teal);
+  --sector-dbp: var(--dbp-violet);
+  --tex-ink: 255 255 255;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,6 +66,10 @@
     --warn-line: var(--dbp-violet-900);
     --star: var(--dbp-violet-300);
     --star-off: #3a3a3a;
+    --sector-estudio: var(--dbp-lavender);
+    --sector-personal: var(--dbp-teal);
+    --sector-dbp: var(--dbp-violet-300);
+    --tex-ink: 0 0 0;
   }
 }
 
@@ -80,9 +91,9 @@
   --color-star-off: var(--star-off);
 
   /* Colores por sector, tomados de la paleta (para listas y gráficos) */
-  --color-sector-estudio: var(--dbp-indigo);
-  --color-sector-personal: var(--dbp-teal);
-  --color-sector-dbp: var(--dbp-violet);
+  --color-sector-estudio: var(--sector-estudio);
+  --color-sector-personal: var(--sector-personal);
+  --color-sector-dbp: var(--sector-dbp);
 
   --font-sans: "Quicksand Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Smooch Sans Variable", "Quicksand Variable", system-ui, sans-serif;
@@ -94,6 +105,20 @@
 }
 @utility leaf-sm {
   border-radius: 0.25rem 0.875rem 0.25rem 0.875rem;
+}
+
+/* Texturas por sector para los gráficos: el sector no depende solo del color. */
+@utility tex-estudio {
+  background-color: var(--sector-estudio);
+  background-image: repeating-linear-gradient(45deg, rgb(var(--tex-ink) / 0.3) 0 2px, transparent 2px 6px);
+}
+@utility tex-personal {
+  background-color: var(--sector-personal);
+  background-image: radial-gradient(rgb(var(--tex-ink) / 0.45) 1.2px, transparent 1.4px);
+  background-size: 6px 6px;
+}
+@utility tex-dbp {
+  background-color: var(--sector-dbp);
 }
 
 body {

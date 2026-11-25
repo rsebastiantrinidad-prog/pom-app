@@ -1,14 +1,18 @@
 import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { addPomDays, getPomDay, getSlotAt, getSlotProgress, needsRating } from "@/lib/pom";
 import { getSettings } from "@/lib/db";
 import { getRunningPom, listPomsForDay } from "@/lib/db/poms";
 import { getOpenSleep, listSleepForDays } from "@/lib/db/sleep";
+import { getDaySummary } from "@/lib/db/summary";
+import { SUMMARY_SEEN_COOKIE } from "@/lib/summary-cookie";
 import { Ambient } from "./_components/ambient";
 import { AppHeader } from "./_components/app-header";
 import { BrandLogo } from "./_components/brand";
 import { DayList } from "./_components/day-list";
 import { FinishedCard } from "./_components/finished-card";
+import { MorningSummary } from "./_components/morning-summary";
 import { PomTimer } from "./_components/pom-timer";
 import { SleepScreen } from "./_components/sleep-screen";
 import { SleepSection } from "./_components/sleep-section";
@@ -24,11 +28,14 @@ async function Today() {
   const today = getPomDay(now, settings.day_start_hour);
   const yesterday = addPomDays(today, -1);
   // La sesión abierta se busca aparte: si quedó olvidada puede ser de hace varios días.
-  const [running, poms, sleeps, openSleep] = await Promise.all([
+  // Resumen matinal (PER-99): hasta que se cierre en el día PoM de hoy.
+  const showSummary = (await cookies()).get(SUMMARY_SEEN_COOKIE)?.value !== today;
+  const [running, poms, sleeps, openSleep, summary] = await Promise.all([
     getRunningPom(now),
     listPomsForDay(today),
     listSleepForDays([yesterday, today]),
     getOpenSleep(),
+    showSummary ? getDaySummary(yesterday, now) : null,
   ]);
   const slot = getSlotAt(settings.schedule, now);
 
@@ -52,6 +59,7 @@ async function Today() {
         Día PoM {today}
         {slot && ` · ${slot.label}`}
       </p>
+      {summary && !running && <MorningSummary today={today} summary={summary} />}
       {toRate && <FinishedCard key={toRate.id} pom={toRate} />}
       {openSleep && <SleepScreen key={openSleep.id} session={openSleep} serverNow={now.getTime()} />}
       {running ? (

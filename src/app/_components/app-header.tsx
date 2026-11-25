@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Settings2, Smartphone } from "lucide-react";
+import { ArrowLeft, BarChart3, Settings2, Smartphone } from "lucide-react";
 import { BrandIsotipo } from "./brand";
 
 const iconBtn =
@@ -22,6 +22,9 @@ export function AppHeader({ back }: { back?: boolean }) {
         </Link>
       ) : (
         <nav className="flex gap-2">
+          <Link href="/avance" className={iconBtn} aria-label="Avance">
+            <BarChart3 className="size-5" />
+          </Link>
           <Link href="/movil" className={iconBtn} aria-label="Uso del móvil">
             <Smartphone className="size-5" />
           </Link>

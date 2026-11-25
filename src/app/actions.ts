@@ -1,6 +1,8 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { cookies } from "next/headers";
+import { SUMMARY_SEEN_COOKIE } from "@/lib/summary-cookie";
 import { getSettings, saveSchedule } from "@/lib/db";
 import { savePhoneApps, saveUsage } from "@/lib/db/phone";
 import { discardPom, getRunningPom, interruptPom, ratePom, startPom } from "@/lib/db/poms";
@@ -202,6 +204,19 @@ export async function savePhoneAppsAction(apps: unknown): Promise<ActionResult> 
   } catch (e) {
     return fail(e, "No se pudo guardar la lista de apps.");
   }
+  refresh();
+  return { ok: true };
+}
+
+/** Cierra el resumen matinal (PER-99): no vuelve a aparecer ese día PoM en este dispositivo. */
+export async function dismissSummaryAction(day: string): Promise<ActionResult> {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return { ok: false, error: "Día inválido." };
+  (await cookies()).set(SUMMARY_SEEN_COOKIE, day, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 3 * 24 * 60 * 60,
+  });
   refresh();
   return { ok: true };
 }
