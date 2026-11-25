@@ -148,7 +148,7 @@ export function PomTimer({
 
         <div className="flex max-w-sm animate-fade-up flex-col items-center gap-1 text-center [animation-delay:150ms]">
           <p className="text-xl font-bold leading-snug">{pom.objective}</p>
-          {hint && <p className="text-sm font-semibold text-accent-strong">Foco sugerido · {hint}</p>}
+          {hint && <p className="text-sm font-semibold text-accent-strong">Sugerencia · {hint}</p>}
         </div>
         <RotatingQuote />
       </div>

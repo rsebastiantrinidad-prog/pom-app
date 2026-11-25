@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Más · PoM" };
 const rows = [
   { href: "/movil", icon: Smartphone, title: "Uso del móvil", desc: "Cargá el tiempo de pantalla por app" },
   { href: "/ajustes", icon: Settings2, title: "Ajustes", desc: "Tema, avisos, horario y apps del móvil" },
-  { href: "/ajustes#como-funciona", icon: HelpCircle, title: "Cómo funciona", desc: "Qué es un PoM, los ejes y los bloques" },
+  { href: "/ajustes#como-funciona", icon: HelpCircle, title: "Cómo funciona", desc: "Qué es un PoM, los focos del día y los bloques" },
 ];
 
 /** Pestaña Más: todo lo que no es del día a día, en una lista simple. */

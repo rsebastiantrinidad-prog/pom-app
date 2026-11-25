@@ -16,11 +16,11 @@ export function HowItWorks({ pomMinutes, restMinutes }: { pomMinutes: number; re
     },
     {
       icon: CalendarClock,
-      title: "Para qué sirven los ejes",
+      title: "Para qué sirven los focos del día",
       text: (
         <>
           Son los grandes momentos de tu día, cada uno con su horario. Ejemplo: de 15:00 a 22:00, <b>Driven By People</b>.
-          Cuando abrís la app, mira la hora y te propone el sector del eje en el que estás. Los ejes sin sector (como
+          Cuando abrís la app, mira la hora y te propone el sector del foco del día en el que estás. Los focos sin sector (como
           Dormir) no proponen nada: ahí elegís vos.
         </>
       ),
@@ -30,7 +30,7 @@ export function HowItWorks({ pomMinutes, restMinutes }: { pomMinutes: number; re
       title: "PoM planificados",
       text: (
         <>
-          Cuántos bloques querés hacer en ese eje. Con 8, la app te muestra <b>“bloque 3 de 8”</b> para que sepas
+          Cuántos bloques querés hacer en ese foco. Con 8, la app te muestra <b>“bloque 3 de 8”</b> para que sepas
           cuánto llevás. Es una guía, no una obligación: podés hacer más o menos.
         </>
       ),

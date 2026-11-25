@@ -8,7 +8,7 @@ import { SECTOR_LABELS, SECTORS, type ScheduleSlot, type Sector } from "@/lib/po
 const input =
   "rounded-xl border border-line bg-background px-2 py-1.5 text-base focus:border-primary focus:outline-none";
 
-/** Editor del esquema horario (PER-89) y de las pistas de foco (PER-93). */
+/** Editor del esquema horario (PER-89) y de las sugerencias por bloque (PER-93). */
 export function ScheduleEditor({ initial, initialShowHints }: { initial: ScheduleSlot[]; initialShowHints: boolean }) {
   const [slots, setSlots] = useState<ScheduleSlot[]>(initial);
   const [showHints, setShowHints] = useState(initialShowHints);
@@ -31,7 +31,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
         });
       }}
     >
-      <h2 className="font-display text-3xl font-bold leading-none">Tus ejes del día</h2>
+      <h2 className="font-display text-3xl font-bold leading-none">Tus focos del día</h2>
 
       {slots.map((s, i) => (
         <fieldset
@@ -41,7 +41,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
         >
           <div className="flex items-center gap-2">
             <input
-              aria-label="Nombre del eje"
+              aria-label="Nombre del foco del día"
               value={s.label}
               onChange={(e) => update(i, { label: e.target.value })}
               maxLength={60}
@@ -51,7 +51,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
               type="button"
               onClick={() => setSlots((all) => all.filter((_, j) => j !== i))}
               className="press grid size-9 place-items-center rounded-full text-muted hover:text-red-600"
-              aria-label="Quitar eje"
+              aria-label="Quitar foco del día"
             >
               <Trash2 className="size-4" />
             </button>
@@ -106,7 +106,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
 
           {s.sector && s.pom_count ? (
             <details className="text-sm" open={Boolean(s.focus_hints && Object.keys(s.focus_hints).length)}>
-              <summary className="cursor-pointer font-bold text-accent-strong">Foco sugerido por bloque</summary>
+              <summary className="cursor-pointer font-bold text-accent-strong">Sugerencia por bloque</summary>
               <div className="mt-2 flex flex-col gap-1.5">
                 {Array.from({ length: s.pom_count }, (_, k) => String(k + 1)).map((n) => (
                   <label key={n} className="flex items-center gap-2">
@@ -129,16 +129,16 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
       <button
         type="button"
         onClick={() =>
-          setSlots((all) => [...all, { start: "00:00", end: "01:00", label: "Nuevo eje", sector: null, pom_count: null }])
+          setSlots((all) => [...all, { start: "00:00", end: "01:00", label: "Nuevo foco", sector: null, pom_count: null }])
         }
         className="press rounded-xl flex items-center justify-center gap-2 border border-dashed border-primary py-3 font-bold text-primary"
       >
-        <Plus className="size-4" /> Agregar eje
+        <Plus className="size-4" /> Agregar foco del día
       </button>
 
       <label className="rounded-2xl flex items-center justify-between gap-3 border border-line bg-surface p-4 shadow-[var(--shadow)]">
         <span>
-          <span className="block font-bold">Mostrar foco sugerido</span>
+          <span className="block font-bold">Mostrar sugerencia por bloque</span>
           <span className="text-sm text-muted">La pista aparece al iniciar y durante el bloque.</span>
         </span>
         <input

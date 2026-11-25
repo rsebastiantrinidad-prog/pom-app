@@ -42,7 +42,7 @@ async function Focus() {
       : null;
   const game = toRate ? await getGameStats(settings, now) : null;
 
-  // Pista de foco del bloque en curso (PER-93): su número es "completados + 1" en el eje.
+  // Sugerencia del bloque en curso (PER-93): su número es "completados + 1" en el foco del día.
   const progress = running ? getSlotProgress(settings.schedule, poms, now, settings.show_focus_hints) : null;
   const sameSlot = running && progress?.slot.sector === running.sector;
   const runningHint = sameSlot ? progress!.hint : null;

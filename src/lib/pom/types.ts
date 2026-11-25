@@ -50,7 +50,7 @@ export interface PhoneUsage {
   updated_at: string;
 }
 
-/** Eje del día (franja horaria de la rutina). `end` exclusivo, formato HH:MM ("24:00" permitido). */
+/** Foco del día (franja horaria de la rutina). `end` exclusivo, formato HH:MM ("24:00" permitido). */
 export interface ScheduleSlot {
   start: string;
   end: string;
@@ -58,7 +58,7 @@ export interface ScheduleSlot {
   sector: Sector | null;
   /** Cantidad de PoM de referencia (no es una meta guardada). */
   pom_count: number | null;
-  /** Pistas de foco por número de bloque (opcional). */
+  /** Sugerencias por número de bloque (opcional). */
   focus_hints?: Record<string, string>;
 }
 
@@ -68,6 +68,6 @@ export interface AppSettings {
   rest_minutes: number;
   schedule: ScheduleSlot[];
   phone_apps: PhoneApp[];
-  /** Mostrar la pista de foco por bloque (PER-93). */
+  /** Mostrar la sugerencia por bloque (PER-93). */
   show_focus_hints: boolean;
 }
