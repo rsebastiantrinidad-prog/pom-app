@@ -1,6 +1,6 @@
 import "server-only";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { DEFAULT_SETTINGS, type AppSettings, type ScheduleSlot } from "@/lib/pom";
+import { DEFAULT_SETTINGS, normalizePhoneApps, type AppSettings, type ScheduleSlot } from "@/lib/pom";
 
 /**
  * Base de datos D1 (SQLite en Cloudflare). Solo se usa del lado del servidor:
@@ -33,7 +33,7 @@ export async function getSettings(): Promise<AppSettings> {
     pom_minutes: row.pom_minutes,
     rest_minutes: row.rest_minutes,
     schedule: JSON.parse(row.schedule),
-    phone_apps: JSON.parse(row.phone_apps),
+    phone_apps: normalizePhoneApps(JSON.parse(row.phone_apps)),
     show_focus_hints: row.show_focus_hints === 1,
   };
 }

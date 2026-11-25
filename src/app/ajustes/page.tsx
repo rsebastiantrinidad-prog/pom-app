@@ -5,6 +5,7 @@ import { getSettings } from "@/lib/db";
 import { Ambient } from "../_components/ambient";
 import { AppHeader } from "../_components/app-header";
 import { HowItWorks } from "../_components/how-it-works";
+import { PhoneAppsEditor } from "../_components/phone-apps-editor";
 import { ScheduleEditor } from "../_components/schedule-editor";
 
 export const metadata: Metadata = { title: "Ajustes · PoM" };
@@ -16,6 +17,7 @@ async function Editor() {
     <>
       <HowItWorks pomMinutes={settings.pom_minutes} restMinutes={settings.rest_minutes} />
       <ScheduleEditor initial={settings.schedule} initialShowHints={settings.show_focus_hints} />
+      <PhoneAppsEditor initial={settings.phone_apps} />
     </>
   );
 }

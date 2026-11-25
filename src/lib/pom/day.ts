@@ -26,7 +26,7 @@ function localDate(instant: Date): string {
 }
 
 /** Desfase (ms) de la zona PoM respecto de UTC en un instante dado. */
-function tzOffsetMs(instant: Date): number {
+export function tzOffsetMs(instant: Date): number {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: POM_TIMEZONE,
     hourCycle: "h23",
@@ -74,4 +74,26 @@ function pomDayStart(day: PomDay, dayStartHour: number): Date {
   let guess = wallClockAsUtc - tzOffsetMs(new Date(wallClockAsUtc));
   guess = wallClockAsUtc - tzOffsetMs(new Date(guess));
   return new Date(guess);
+}
+
+/**
+ * Instante → texto para un `<input type="datetime-local">` en hora de Córdoba
+ * ("YYYY-MM-DDTHH:MM").
+ */
+export function toLocalInput(instant: Date): string {
+  return new Date(instant.getTime() + tzOffsetMs(instant)).toISOString().slice(0, 16);
+}
+
+/** Texto de un `<input type="datetime-local">` (hora de Córdoba) → instante. Null si no es válido. */
+export function fromLocalInput(value: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
+  if (!m) return null;
+  const [y, mo, d, h, mi] = m.slice(1).map(Number);
+  const wallClockAsUtc = Date.UTC(y, mo - 1, d, h, mi);
+  if (Number.isNaN(wallClockAsUtc)) return null;
+  let guess = wallClockAsUtc - tzOffsetMs(new Date(wallClockAsUtc));
+  guess = wallClockAsUtc - tzOffsetMs(new Date(guess));
+  const out = new Date(guess);
+  // Rechaza fechas imposibles (31/02, 25:00…) que Date.UTC "corrige" solo.
+  return toLocalInput(out) === value ? out : null;
 }

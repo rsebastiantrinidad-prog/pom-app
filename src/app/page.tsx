@@ -1,14 +1,17 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { getPomDay, getSlotAt, getSlotProgress, needsRating } from "@/lib/pom";
+import { addPomDays, getPomDay, getSlotAt, getSlotProgress, needsRating } from "@/lib/pom";
 import { getSettings } from "@/lib/db";
 import { getRunningPom, listPomsForDay } from "@/lib/db/poms";
+import { getOpenSleep, listSleepForDays } from "@/lib/db/sleep";
 import { Ambient } from "./_components/ambient";
 import { AppHeader } from "./_components/app-header";
 import { BrandLogo } from "./_components/brand";
 import { DayList } from "./_components/day-list";
 import { FinishedCard } from "./_components/finished-card";
 import { PomTimer } from "./_components/pom-timer";
+import { SleepScreen } from "./_components/sleep-screen";
+import { SleepSection } from "./_components/sleep-section";
 import { StartForm } from "./_components/start-form";
 
 /** Cuánto tiempo después de terminar se sigue mostrando la tarjeta para valorar. */
@@ -19,7 +22,14 @@ async function Today() {
   const now = new Date();
   const settings = await getSettings();
   const today = getPomDay(now, settings.day_start_hour);
-  const [running, poms] = await Promise.all([getRunningPom(now), listPomsForDay(today)]);
+  const yesterday = addPomDays(today, -1);
+  // La sesión abierta se busca aparte: si quedó olvidada puede ser de hace varios días.
+  const [running, poms, sleeps, openSleep] = await Promise.all([
+    getRunningPom(now),
+    listPomsForDay(today),
+    listSleepForDays([yesterday, today]),
+    getOpenSleep(),
+  ]);
   const slot = getSlotAt(settings.schedule, now);
 
   const last = poms.at(-1);
@@ -43,6 +53,7 @@ async function Today() {
         {slot && ` · ${slot.label}`}
       </p>
       {toRate && <FinishedCard key={toRate.id} pom={toRate} />}
+      {openSleep && <SleepScreen key={openSleep.id} session={openSleep} serverNow={now.getTime()} />}
       {running ? (
         <PomTimer key={running.id} pom={running} serverNow={now.getTime()} hint={runningHint} blockLabel={blockLabel} />
       ) : (
@@ -60,6 +71,13 @@ async function Today() {
         />
       )}
       <DayList poms={poms} now={now} />
+      <SleepSection
+        serverNow={now.getTime()}
+        days={[
+          { day: today, label: "Hoy", sessions: sleeps.filter((s) => s.pom_day === today) },
+          { day: yesterday, label: "Ayer", sessions: sleeps.filter((s) => s.pom_day === yesterday) },
+        ]}
+      />
     </>
   );
 }

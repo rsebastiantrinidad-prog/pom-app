@@ -35,6 +35,13 @@ export interface SleepSession {
   created_at: string;
 }
 
+/** App del móvil para la carga diaria (PER-97). `id` estable; ocultar no borra registros. */
+export interface PhoneApp {
+  id: string;
+  name: string;
+  hidden: boolean;
+}
+
 export interface PhoneUsage {
   id: string;
   pom_day: PomDay;
@@ -60,7 +67,7 @@ export interface AppSettings {
   pom_minutes: number;
   rest_minutes: number;
   schedule: ScheduleSlot[];
-  phone_apps: string[];
+  phone_apps: PhoneApp[];
   /** Mostrar la pista de foco por bloque (PER-93). */
   show_focus_hints: boolean;
 }

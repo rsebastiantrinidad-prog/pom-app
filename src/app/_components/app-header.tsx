@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Settings2 } from "lucide-react";
+import { ArrowLeft, Settings2, Smartphone } from "lucide-react";
 import { BrandIsotipo } from "./brand";
 
 const iconBtn =
@@ -21,9 +21,14 @@ export function AppHeader({ back }: { back?: boolean }) {
           <ArrowLeft className="size-5" />
         </Link>
       ) : (
-        <Link href="/ajustes" className={iconBtn} aria-label="Ajustes">
-          <Settings2 className="size-5" />
-        </Link>
+        <nav className="flex gap-2">
+          <Link href="/movil" className={iconBtn} aria-label="Uso del móvil">
+            <Smartphone className="size-5" />
+          </Link>
+          <Link href="/ajustes" className={iconBtn} aria-label="Ajustes">
+            <Settings2 className="size-5" />
+          </Link>
+        </nav>
       )}
     </header>
   );

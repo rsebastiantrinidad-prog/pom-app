@@ -5,3 +5,5 @@ export * from "./types";
 export * from "./defaults";
 export * from "./session";
 export * from "./schedule";
+export * from "./sleep";
+export * from "./phone";
