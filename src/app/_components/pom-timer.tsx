@@ -7,6 +7,7 @@ import { discardPomAction, interruptPomAction } from "@/app/actions";
 import { canDiscard, formatCountdown, getRemainingMs, type PomSession } from "@/lib/pom";
 import { playAlarm, unlockAudio } from "./alarm";
 import { Ambient } from "./ambient";
+import { RotatingQuote } from "./rotating-quote";
 import { SectorTag } from "./sector-tag";
 
 const R = 46; // radio del anillo en un viewBox de 100
@@ -97,6 +98,7 @@ export function PomTimer({
   return (
     <section
       aria-label="Bloque en curso"
+      data-overlay
       className="fixed inset-0 isolate z-40 flex animate-fade-in flex-col overflow-hidden bg-background"
     >
       <Ambient intensity="focus" />
@@ -148,6 +150,7 @@ export function PomTimer({
           <p className="text-xl font-bold leading-snug">{pom.objective}</p>
           {hint && <p className="text-sm font-semibold text-accent-strong">Foco sugerido · {hint}</p>}
         </div>
+        <RotatingQuote />
       </div>
 
       {/* Acciones */}

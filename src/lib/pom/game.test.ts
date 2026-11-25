@@ -99,3 +99,4 @@ describe("anillos, XP y logros", () => {
     expect(g.achievements.find((x) => x.id === "buen-descanso")?.value).toBe(1);
   });
 });
+

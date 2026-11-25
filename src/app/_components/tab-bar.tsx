@@ -22,6 +22,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="Secciones"
+      data-tab-bar
       className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-background/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl"
     >
       <ul className="mx-auto grid max-w-md grid-cols-4">

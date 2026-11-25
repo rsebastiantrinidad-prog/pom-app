@@ -48,6 +48,7 @@ export function SleepScreen({ session, serverNow }: { session: SleepSession; ser
   return (
     <section
       aria-label="Durmiendo"
+      data-overlay
       className="fixed inset-0 isolate z-40 flex animate-fade-in flex-col overflow-hidden bg-[#0d0620] text-white"
     >
       {/* Cielo nocturno: luces violetas muy tenues que flotan */}

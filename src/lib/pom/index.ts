@@ -9,3 +9,4 @@ export * from "./sleep";
 export * from "./phone";
 export * from "./summary";
 export * from "./game";
+export * from "./quotes";

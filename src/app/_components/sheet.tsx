@@ -27,7 +27,7 @@ export function Sheet({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex animate-fade-in items-end bg-black/40 backdrop-blur-[2px]" onClick={onClose}>
+    <div data-overlay className="fixed inset-0 z-50 flex animate-fade-in items-end bg-black/40 backdrop-blur-[2px]" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
