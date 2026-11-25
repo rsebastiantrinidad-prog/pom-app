@@ -10,7 +10,7 @@ const STROKE: Record<Sector, string> = {
 
 /**
  * Anillos del día (uno por sector): se cierran al llegar a los PoM planificados
- * de sus franjas. Al lado, la leyenda con los números (no depende del color).
+ * de sus ejes. Al lado, la leyenda con los números (no depende del color).
  */
 export function DayRings({ rings, size = 132 }: { rings: Ring[]; size?: number }) {
   const width = 9;

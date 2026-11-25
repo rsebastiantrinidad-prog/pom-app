@@ -60,7 +60,7 @@ export interface GameStats {
   totalPoms: number;
 }
 
-/** PoM de referencia por sector según el esquema horario (suma de sus franjas). */
+/** PoM de referencia por sector según el esquema horario (suma de sus ejes). */
 export function sectorGoals(schedule: ScheduleSlot[]): Record<Sector, number> {
   const goals = { estudio: 0, personal: 0, dbp: 0 } as Record<Sector, number>;
   for (const s of schedule) if (s.sector && s.pom_count) goals[s.sector] += s.pom_count;

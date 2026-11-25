@@ -50,7 +50,7 @@ export interface PhoneUsage {
   updated_at: string;
 }
 
-/** Franja horaria de la rutina. `end` exclusivo, formato HH:MM ("24:00" permitido). */
+/** Eje del día (franja horaria de la rutina). `end` exclusivo, formato HH:MM ("24:00" permitido). */
 export interface ScheduleSlot {
   start: string;
   end: string;

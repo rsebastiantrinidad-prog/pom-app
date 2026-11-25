@@ -24,7 +24,7 @@ export function localMinutes(instant: Date): number {
 const inSlot = (slot: ScheduleSlot, minutes: number) =>
   toMinutes(slot.start) <= minutes && minutes < toMinutes(slot.end);
 
-/** Franja de la rutina que corresponde a un instante (end exclusivo). */
+/** Eje del día (franja horaria de la rutina) que corresponde a un instante (end exclusivo). */
 export function getSlotAt(schedule: ScheduleSlot[], instant: Date): ScheduleSlot | null {
   const now = localMinutes(instant);
   return schedule.find((s) => inSlot(s, now)) ?? null;
@@ -32,17 +32,17 @@ export function getSlotAt(schedule: ScheduleSlot[], instant: Date): ScheduleSlot
 
 export interface SlotProgress {
   slot: ScheduleSlot;
-  /** Número del próximo bloque dentro de la franja (1 = el primero). */
+  /** Número del próximo bloque dentro del eje (1 = el primero). */
   blockNumber: number;
-  /** Cantidad de referencia de la franja, si tiene. */
+  /** Cantidad de referencia del eje, si tiene. */
   total: number | null;
   /** Pista de foco para ese bloque (PER-93), si hay y están activadas. */
   hint: string | null;
 }
 
 /**
- * Franja actual y en qué bloque vas (PER-90). El número sale de los PoM ya
- * completados en esa franja y ese sector durante el día PoM, no del reloj:
+ * Eje actual y en qué bloque vas (PER-90). El número sale de los PoM ya
+ * completados en ese eje y ese sector durante el día PoM, no del reloj:
  * si arrancás tarde, igual te propone el bloque 1.
  */
 export function getSlotProgress(
@@ -80,11 +80,11 @@ export function formatLocalTime(iso: string): string {
 
 /**
  * Valida y normaliza el esquema horario que llega del formulario de ajustes (PER-89).
- * Devuelve las franjas ordenadas o un mensaje de error para el usuario.
+ * Devuelve los ejes ordenados o un mensaje de error para el usuario.
  */
 export function validateSchedule(input: unknown): { ok: true; schedule: ScheduleSlot[] } | { ok: false; error: string } {
-  if (!Array.isArray(input) || input.length === 0) return { ok: false, error: "Tiene que haber al menos una franja." };
-  if (input.length > 24) return { ok: false, error: "Demasiadas franjas (máximo 24)." };
+  if (!Array.isArray(input) || input.length === 0) return { ok: false, error: "Tiene que haber al menos un eje." };
+  if (input.length > 24) return { ok: false, error: "Demasiados ejes (máximo 24)." };
 
   const out: ScheduleSlot[] = [];
   for (const raw of input) {
@@ -92,18 +92,18 @@ export function validateSchedule(input: unknown): { ok: true; schedule: Schedule
     const label = typeof s.label === "string" ? s.label.trim() : "";
     const name = label || `${s.start}–${s.end}`;
     if (typeof s.start !== "string" || typeof s.end !== "string" || !HHMM.test(s.start) || !HHMM.test(s.end) || s.start === "24:00") {
-      return { ok: false, error: `Franja "${name}": las horas van como HH:MM (fin hasta 24:00).` };
+      return { ok: false, error: `Eje "${name}": las horas van como HH:MM (fin hasta 24:00).` };
     }
     if (toMinutes(s.end) <= toMinutes(s.start)) {
-      return { ok: false, error: `Franja "${name}": el fin tiene que ser después del inicio. Para cruzar la medianoche, dividila en dos.` };
+      return { ok: false, error: `Eje "${name}": el fin tiene que ser después del inicio. Para cruzar la medianoche, dividila en dos.` };
     }
-    if (!label || label.length > 60) return { ok: false, error: "Cada franja necesita un nombre (hasta 60 caracteres)." };
+    if (!label || label.length > 60) return { ok: false, error: "Cada eje necesita un nombre (hasta 60 caracteres)." };
     const sector = s.sector ?? null;
-    if (sector !== null && !SECTORS.includes(sector as Sector)) return { ok: false, error: `Franja "${name}": sector inválido.` };
+    if (sector !== null && !SECTORS.includes(sector as Sector)) return { ok: false, error: `Eje "${name}": sector inválido.` };
     let pomCount: number | null = null;
     if (s.pom_count != null) {
       if (!Number.isInteger(s.pom_count) || s.pom_count < 1 || s.pom_count > 20) {
-        return { ok: false, error: `Franja "${name}": la cantidad de PoM va de 1 a 20.` };
+        return { ok: false, error: `Eje "${name}": la cantidad de PoM va de 1 a 20.` };
       }
       pomCount = s.pom_count;
     }
@@ -124,7 +124,7 @@ export function validateSchedule(input: unknown): { ok: true; schedule: Schedule
   out.sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
   for (let i = 1; i < out.length; i++) {
     if (toMinutes(out[i].start) < toMinutes(out[i - 1].end)) {
-      return { ok: false, error: `Las franjas "${out[i - 1].label}" y "${out[i].label}" se superponen.` };
+      return { ok: false, error: `Los ejes "${out[i - 1].label}" y "${out[i].label}" se superponen.` };
     }
   }
   return { ok: true, schedule: out };

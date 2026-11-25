@@ -19,7 +19,7 @@ const R = 45;
 const C = 2 * Math.PI * R;
 
 /**
- * Pantalla Foco en reposo: un anillo grande con el avance de la franja actual,
+ * Pantalla Foco en reposo: un anillo grande con el avance del eje actual,
  * el sector sugerido y un solo botón. El objetivo es obligatorio (PER-83); el
  * sector se sugiere según la hora (PER-90, PER-93) y se puede cambiar (PER-91).
  */
@@ -79,7 +79,7 @@ export function StartForm({
       <div className="flex animate-fade-up flex-col items-center gap-1 text-center">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted">Ahora</p>
         <p className="font-display text-3xl font-bold leading-none">
-          {progress ? SECTOR_LABELS[progress.slot.sector!] : "Fuera de franja"}
+          {progress ? SECTOR_LABELS[progress.slot.sector!] : "Sin eje ahora"}
         </p>
         {progress && (
           <p className="text-sm font-semibold text-muted">
@@ -113,7 +113,7 @@ export function StartForm({
             {String(pomMinutes).padStart(2, "0")}:00
           </span>
           <span className="mt-1 text-xs font-semibold text-muted">
-            {total ? `${done} de ${total} en esta franja` : "minutos de foco"}
+            {total ? `${done} de ${total} en este eje` : "minutos de foco"}
           </span>
         </div>
       </div>

@@ -31,7 +31,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
         });
       }}
     >
-      <h2 className="font-display text-3xl font-bold leading-none">Tus franjas</h2>
+      <h2 className="font-display text-3xl font-bold leading-none">Tus ejes del día</h2>
 
       {slots.map((s, i) => (
         <fieldset
@@ -41,7 +41,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
         >
           <div className="flex items-center gap-2">
             <input
-              aria-label="Nombre de la franja"
+              aria-label="Nombre del eje"
               value={s.label}
               onChange={(e) => update(i, { label: e.target.value })}
               maxLength={60}
@@ -51,7 +51,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
               type="button"
               onClick={() => setSlots((all) => all.filter((_, j) => j !== i))}
               className="press grid size-9 place-items-center rounded-full text-muted hover:text-red-600"
-              aria-label="Quitar franja"
+              aria-label="Quitar eje"
             >
               <Trash2 className="size-4" />
             </button>
@@ -129,11 +129,11 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
       <button
         type="button"
         onClick={() =>
-          setSlots((all) => [...all, { start: "00:00", end: "01:00", label: "Nueva franja", sector: null, pom_count: null }])
+          setSlots((all) => [...all, { start: "00:00", end: "01:00", label: "Nuevo eje", sector: null, pom_count: null }])
         }
         className="press rounded-xl flex items-center justify-center gap-2 border border-dashed border-primary py-3 font-bold text-primary"
       >
-        <Plus className="size-4" /> Agregar franja
+        <Plus className="size-4" /> Agregar eje
       </button>
 
       <label className="rounded-2xl flex items-center justify-between gap-3 border border-line bg-surface p-4 shadow-[var(--shadow)]">
