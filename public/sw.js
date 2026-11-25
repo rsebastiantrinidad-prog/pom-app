@@ -18,3 +18,29 @@ self.addEventListener("fetch", (event) => {
     ),
   );
 });
+
+// Aviso de fin de bloque (PER-106). El push llega sin contenido: el texto es fijo.
+// En Android, las notificaciones se replican en el reloj (Galaxy Watch / Wear OS).
+self.addEventListener("push", (event) => {
+  event.waitUntil(
+    self.registration.showNotification("¡Bloque terminado!", {
+      body: "Terminó tu PoM. Tomá tu descanso y valorá cómo te fue.",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      tag: "pom-fin",
+      renotify: true,
+      requireInteraction: true,
+      vibrate: [400, 150, 400, 150, 700],
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      const open = list.find((c) => new URL(c.url).origin === self.location.origin);
+      return open ? open.focus().then((c) => c.navigate("/")) : self.clients.openWindow("/");
+    }),
+  );
+});

@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Más · PoM" };
 
 const rows = [
   { href: "/movil", icon: Smartphone, title: "Uso del móvil", desc: "Cargá el tiempo de pantalla por app" },
-  { href: "/ajustes", icon: Settings2, title: "Ajustes", desc: "Tema, horario por sector y apps del móvil" },
+  { href: "/ajustes", icon: Settings2, title: "Ajustes", desc: "Tema, avisos, horario y apps del móvil" },
   { href: "/ajustes#como-funciona", icon: HelpCircle, title: "Cómo funciona", desc: "Qué es un PoM, franjas y bloques" },
 ];
 

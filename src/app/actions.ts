@@ -7,6 +7,7 @@ import { isTheme, THEME_COOKIE } from "@/lib/theme";
 import { getSettings, saveSchedule } from "@/lib/db";
 import { savePhoneApps, saveUsage } from "@/lib/db/phone";
 import { discardPom, getRunningPom, interruptPom, ratePom, startPom } from "@/lib/db/poms";
+import { disablePushSubscription, savePushSubscription, scheduleEndAlarm, sendTestPush } from "@/lib/db/push";
 import { getOpenSleep, getSleep, listSleepNear, startSleep, updateSleep } from "@/lib/db/sleep";
 import {
   fromLocalInput,
@@ -43,9 +44,9 @@ export async function startPomAction(objective: string, sector: string): Promise
   if (text.length > 500) return { ok: false, error: "El objetivo es demasiado largo." };
   if (!isSector(sector)) return { ok: false, error: "Elegí un sector." };
 
-  const settings = await getSettings();
   const now = new Date();
-  if (await getOpenSleep()) return { ok: false, error: "Estás durmiendo: tocá “Desperté” primero." };
+  const [settings, openSleep] = await Promise.all([getSettings(), getOpenSleep()]);
+  if (openSleep) return { ok: false, error: "Estás durmiendo: tocá “Desperté” primero." };
   try {
     await startPom({
       objective: text,
@@ -58,6 +59,8 @@ export async function startPomAction(objective: string, sector: string): Promise
   } catch (e) {
     return fail(e, "No se pudo iniciar el PoM.");
   }
+  // Aviso push al terminar (PER-106): llega aunque el celular esté bloqueado.
+  await scheduleEndAlarm(new Date(now.getTime() + settings.pom_minutes * 60_000));
   refresh();
   return { ok: true };
 }
@@ -232,4 +235,38 @@ export async function setThemeAction(theme: string): Promise<ActionResult> {
     maxAge: 400 * 24 * 60 * 60,
   });
   return { ok: true };
+}
+
+/** Guarda la suscripción push de este dispositivo (PER-106). */
+export async function savePushSubscriptionAction(sub: unknown, userAgent: string): Promise<ActionResult> {
+  const s = sub as { endpoint?: unknown; keys?: { p256dh?: unknown; auth?: unknown } } | null;
+  if (!s || typeof s.endpoint !== "string" || !s.endpoint.startsWith("https://") || s.endpoint.length > 2000)
+    return { ok: false, error: "Suscripción inválida." };
+  const str = (v: unknown) => (typeof v === "string" && v.length < 500 ? v : null);
+  try {
+    await savePushSubscription(
+      { endpoint: s.endpoint, p256dh: str(s.keys?.p256dh), auth: str(s.keys?.auth) },
+      userAgent.slice(0, 300),
+    );
+    return { ok: true };
+  } catch (e) {
+    return fail(e, "No se pudo activar el aviso.");
+  }
+}
+
+export async function disablePushSubscriptionAction(endpoint: string): Promise<ActionResult> {
+  if (typeof endpoint !== "string" || !endpoint.startsWith("https://")) return { ok: false, error: "Inválido." };
+  await disablePushSubscription(endpoint);
+  return { ok: true };
+}
+
+/** Manda un aviso de prueba a todos los dispositivos activados. */
+export async function testPushAction(): Promise<ActionResult> {
+  try {
+    const { sent, failed } = await sendTestPush();
+    if (!sent) return { ok: false, error: failed ? "No se pudo entregar el aviso." : "No hay dispositivos activados." };
+    return { ok: true };
+  } catch (e) {
+    return fail(e, "No se pudo enviar el aviso de prueba.");
+  }
 }

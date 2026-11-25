@@ -5,7 +5,7 @@
   // Nombre del Worker: define la URL pom-app.<tu-subdominio>.workers.dev
   "name": "pom-app",
   // Punto de entrada que genera OpenNext al compilar la app de Next.js
-  "main": ".open-next/worker.js",
+  "main": "worker.ts",
   "compatibility_date": "2026-11-20",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   // Sin URLs de vista previa por versión: así la única puerta de entrada es la
@@ -31,6 +31,16 @@
   // La base D1 está en ENAM (Newark). Correr el Worker cerca de ella evita que cada
   // consulta cruce el continente desde Buenos Aires: un solo viaje largo por pantalla.
   "placement": { "region": "aws:us-east-1" },
+  // Alarma de fin de bloque para las notificaciones push (PER-106).
+  "durable_objects": {
+    "bindings": [{ "name": "POM_ALARM", "class_name": "PomAlarm" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PomAlarm"] }],
+  // Clave pública VAPID (la privada es un secreto: VAPID_PRIVATE_JWK).
+  "vars": {
+    "VAPID_PUBLIC_KEY": "BIgf8o_x_RRJcX9D97kXAbf0N3mliVcmXP1mlrNicaHZYzxPfnihWEf_5hNehbM3tPwKT26f7EXzPsuWfF5p-Ek",
+    "VAPID_SUBJECT": "https://pom-app.pom-app.workers.dev"
+  },
   "observability": {
     "enabled": true
   }
