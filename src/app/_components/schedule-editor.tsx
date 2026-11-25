@@ -31,10 +31,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
         });
       }}
     >
-      <p className="text-sm text-muted">
-        Las franjas definen qué sector se sugiere según la hora (Córdoba). Una franja sin sector no sugiere nada. La
-        cantidad de PoM es solo la referencia para “bloque N de M”.
-      </p>
+      <h2 className="font-display text-3xl font-bold leading-none">Tus franjas</h2>
 
       {slots.map((s, i) => (
         <fieldset
@@ -86,7 +83,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
                 onChange={(e) => update(i, { sector: (e.target.value || null) as Sector | null })}
                 className={input}
               >
-                <option value="">Sin sector</option>
+                <option value="">Sin sector (no propone)</option>
                 {SECTORS.map((sec) => (
                   <option key={sec} value={sec}>
                     {SECTOR_LABELS[sec]}
@@ -95,7 +92,7 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
               </select>
             </label>
             <label className="flex flex-col gap-1 text-sm">
-              PoM de referencia
+              PoM planificados
               <input
                 type="number"
                 min={1}
