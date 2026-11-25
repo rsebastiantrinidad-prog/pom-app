@@ -64,14 +64,14 @@ export function ScheduleEditor({ initial, initialShowHints }: { initial: Schedul
             </label>
             <label className="flex flex-col gap-1 text-sm">
               Hasta
+              {/* El reloj del celular no tiene "24:00": se elige 00:00 y se guarda como medianoche (fin del día). */}
               <input
-                value={s.end}
-                onChange={(e) => update(i, { end: e.target.value })}
-                placeholder="HH:MM"
-                inputMode="numeric"
-                pattern="([01]\d|2[0-3]):[0-5]\d|24:00"
+                type="time"
+                value={s.end === "24:00" ? "00:00" : s.end}
+                onChange={(e) => update(i, { end: e.target.value === "00:00" ? "24:00" : e.target.value })}
                 className={input}
               />
+              {s.end === "24:00" && <span className="text-xs text-muted">Medianoche (fin del día)</span>}
             </label>
           </div>
 
